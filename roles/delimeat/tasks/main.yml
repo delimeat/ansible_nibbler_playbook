@@ -1,0 +1,48 @@
+- name: install delimeat packages 
+  apt:
+   name: "{{ item }}" 
+   state: present
+  notify: 
+   - restart tomcat
+  with_items: "{{ delimeat_pkgs }}"
+- name: open port 8080 for tomcat
+  ufw: 
+   rule: 'allow'
+   port: '8080'
+   proto: 'tcp'
+  notify:
+   - reload ufw
+- name: create {{ delimeat_systemd_dir}} directory 
+  file:
+   path: "{{ delimeat_systemd_dir}}"
+   state: directory
+   owner: root
+   group: root
+  notify:
+   - restart tomcat
+- name: add systemd config file for tomcat8
+  template:
+   src: "{{ delimeat_systemd_conf }}.j2"
+   dest: "{{ delimeat_systemd_dir }}/{{ delimeat_systemd_conf }}"
+   owner: root
+   group: root
+   mode: 0644
+  notify:
+   - restart tomcat
+- name: create {{ delimeat_app_dir }} directory
+  file:
+   path: "{{ delimeat_app_dir }}"
+   state: directory
+   owner: tomcat8
+   group: tomcat8
+  notify:
+   - restart tomcat
+- name: create {{ delimeat_output_dir }} directory
+  file:
+   path: "{{ delimeat_output_dir }}"
+   state: directory
+   owner: tomcat8
+   group: tomcat8
+   mode: 0755
+  notify:
+   - restart tomcat

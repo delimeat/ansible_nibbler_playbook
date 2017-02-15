@@ -1,0 +1,31 @@
+- name: install ufw packages
+  apt:
+   name: "{{ item }}"
+   state: present
+  with_items: 
+   - ufw
+- name: disable ipv6 in ufw
+  lineinfile:
+   name: /etc/default/ufw
+   regexp: '^IPV6='
+   line: 'IPV6=no'
+  notify:
+   - reload ufw
+- name: configure ufw defaults 
+  ufw:
+   policy: "{{ item.policy }}"
+   direction: "{{ item.direction }}"
+  with_items: 
+   - { direction: 'incoming', policy: 'deny' }
+   - { direction: 'outgoing', policy: 'allow' } 
+  notify:
+   - reload ufw
+- name: configure ufw rules
+  ufw:
+   rule: "{{ item.rule }}"
+   port: "{{ item.port }}"
+   proto: "{{ item.proto }}"
+  with_items:
+   - { rule: 'allow', port: '22', proto: 'tcp' } 
+  notify:
+   - reload ufw

@@ -1,0 +1,7 @@
+transmission_output_dir: /mnt/shared
+transmission_nfs_server: bender
+transmission_nfs_path: /nfs
+transmission_nfs_opts: defaults,x-systemd.autmount,noauto
+transmission_watch_dir: /opt/delimeat/torrents
+transmission_systemd_dir: /etc/systemd/system/transmission-daemon.service.d
+transmission_systemd_conf: 10-override-exec.conf

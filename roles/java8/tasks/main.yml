@@ -1,0 +1,21 @@
+- name: install java prereq packages 
+  apt: 
+   name: "{{ item }}"
+   state: present
+  with_items: "{{ java_prereq_pkgs }}"
+- name: add {{ java_ppa }} repository
+  apt_repository:
+   repo: "{{ java_ppa }}"
+   state: present
+- name: auto accept {{ java_licence.name }} licence
+  debconf:
+   name: "{{ java_licence.name }}"
+   question: "{{ java_licence.question }}"
+   value: "{{ java_licence.value }}"
+   vtype: "{{ java_licence.vtype }}"
+- name: install java packages 
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+  with_items: "{{ java_pkgs }}"
