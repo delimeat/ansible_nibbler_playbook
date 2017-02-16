@@ -4,7 +4,8 @@
    state: present
   notify: 
    - restart tomcat
-  with_items: "{{ delimeat_pkgs }}"
+  with_items:
+   - tomcat8
 - name: open port 8080 for tomcat
   ufw: 
    rule: 'allow'
