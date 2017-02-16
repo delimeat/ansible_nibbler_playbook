@@ -12,3 +12,7 @@
    - java8
    - delimeat 
    - transmission
+  handlers:
+   - name: reload ufw
+     ufw: 
+      status: enabled

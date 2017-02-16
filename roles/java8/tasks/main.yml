@@ -11,7 +11,7 @@
 - name: auto accept java licence
   debconf:
    name: "{{ java_pkg }}" 
-   question: 'shared/accepted-oracle-licence-v1-1' 
+   question: 'shared/accepted-oracle-license-v1-1' 
    value: 'true'
    vtype: 'select' 
 - name: install java packages 
