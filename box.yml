@@ -7,12 +7,14 @@
      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
      changed_when: False
    - setup: 
+  vars:
+   - delimeat_port: 8080
+   - transmission_port: 9091
+   - firewall_rules:
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ ssh_port }}", cstate: NEW, jump: ACCEPT }
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ delimeat_port }}", cstate: NEW, jump: ACCEPT }
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ transmission_port }}", cstate: NEW, jump: ACCEPT }
   roles:
-   - ufw
-   - java8
+   - common
    - delimeat 
    - transmission
-  handlers:
-   - name: reload ufw
-     ufw: 
-      status: enabled

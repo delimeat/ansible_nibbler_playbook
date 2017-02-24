@@ -1,3 +1,3 @@
 [Service]
 ExecStart=
-ExecStart=/usr/bin/transmission-daemon -f --log-error -a *.*.*.* -c {{ transmission_watch_dir }} -gsr 0.1 -w {{ transmission_output_dir }} -T
+ExecStart=/usr/bin/transmission-daemon -f --log-error -a *.*.*.* -c {{ transmission_watch_dir }} -gsr 0.1 -w {{ transmission_download_dir }} -T

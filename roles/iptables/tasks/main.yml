@@ -7,17 +7,6 @@
   with_items: 
    - iptables-persistent   
   notify: restart netfilter-persistent
-  when: ansible_os_family == 'Debian'
-- name: yum install iptables-persistent
-  yum:
-   name: "{{ item }}"
-   state: present
-   update_cache: yes
-   install_recommends: no
-  with_items: 
-   - iptables-persistent   
-  notify: restart netfilter-persistent
-  when: ansible_os_family == 'RedHat' 
 - name: Copy iptables template rules over to /etc/iptables
   template: 
    src: rules.v4.j2 

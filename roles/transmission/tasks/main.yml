@@ -8,13 +8,6 @@
    - transmission-daemon
    - nfs-common
    - acl
-- name: open port 9091 for transmission
-  ufw:
-   rule: 'allow'
-   port: '9091'
-   proto: 'tcp'
-  notify:
-   - reload ufw
 - name: create {{ transmission_systemd_dir }} directory 
   file:
    path: "{{ transmission_systemd_dir }}"
@@ -32,16 +25,16 @@
    mode: 0644
   notify:
    - restart transmission-daemon
-- name: create {{ transmission_output_dir }}  directory
+- name: create {{ transmission_download_dir }}  directory
   file:
-   path: "{{ transmission_output_dir }}"
+   path: "{{ transmission_download_dir }}"
    state: directory
    owner: root 
    group: root
   notify:
-- name: configure /etc/fstab for {{ transmission_output_dir }}
+- name: configure /etc/fstab for {{ transmission_download_dir }}
   mount:
-   name: "{{ transmission_output_dir }}"
+   name: "{{ transmission_download_dir }}"
    src: "{{ transmission_nfs_server }}:{{ transmission_nfs_path }}"
    fstype: nfs
    opts: "{{ transmission_nfs_opts }}"

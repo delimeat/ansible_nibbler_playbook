@@ -6,13 +6,6 @@
    - restart tomcat
   with_items:
    - tomcat8
-- name: open port 8080 for tomcat
-  ufw: 
-   rule: 'allow'
-   port: '8080'
-   proto: 'tcp'
-  notify:
-   - reload ufw
 - name: create {{ delimeat_systemd_dir}} directory 
   file:
    path: "{{ delimeat_systemd_dir}}"
