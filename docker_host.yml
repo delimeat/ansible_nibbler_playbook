@@ -1,0 +1,21 @@
+- hosts: all
+  become: yes
+  user: "{{ user }}"
+  gather_facts: no
+  pre_tasks:
+   - name: bootstrap python for ansible
+     raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+     changed_when: False
+   - setup: 
+  vars:
+   - portainer_port: 9000
+   - guac_port: 8080
+   - ssh_port: 22
+   - firewall_rules:
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ ssh_port }}", cstate: NEW, jump: ACCEPT }
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ portainer_port }}", cstate: NEW, jump: ACCEPT }
+     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ guac_port }}", cstate: NEW, jump: ACCEPT }
+  roles:
+   - common
+   - portainer
+   - guacamole

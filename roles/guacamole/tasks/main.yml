@@ -1,0 +1,52 @@
+- name: create guacamole db data directory	
+  file:
+   path: /opt/docker/guac_db/data
+   state: directory
+   mode: 0755
+- name: copy initdb.sql to host
+  copy:
+   src: initdb.sql
+   dest: /opt/docker/guac_db/initdb.sql
+   mode: 0644
+- name: start docker
+  systemd:
+   name: docker
+   state: started
+- name: create guac_db container
+  docker_container:
+   name: guac_db
+   image: "mariadb:latest"
+   pull: false
+   restart_policy: always
+   state: started
+   volumes:
+    - /opt/docker/guac_db/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
+    - /opt/docker/guac_db/data:/var/lib/mysql
+   env:
+    MYSQL_ROOT_PASSWORD: guac
+    MYSQL_DATABASE: guac
+    MYSQL_USER: guac
+    MYSQL_PASSWORD: guac
+- name: create guacd container
+  docker_container:
+   name: guacd
+   image: "guacamole/guacd:latest"
+   pull: false
+   restart_policy: always
+   state: started
+- name: create guacamole container
+  docker_container:
+   name: guacamole
+   image: "guacamole/guacamole:latest"
+   pull: false
+   restart_policy: always
+   state: started
+   ports:
+    - "{{ guac_port }}:8080"
+   links:
+    - "guacd:guacd"
+    - "guac_db:mysql"
+   env:
+    MYSQL_DATABASE: guac
+    MYSQL_USER: guac
+    MYSQL_PASSWORD: guac

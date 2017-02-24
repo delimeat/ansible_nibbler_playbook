@@ -1,0 +1,8 @@
+- name: set hostname
+  hostname:
+   name: "{{ host_name }}"
+  when: host_name is defined
+- name: set timezone
+  timezone:
+   name: "{{ host_tz }}"
+  when: host_tz is defined

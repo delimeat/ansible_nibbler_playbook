@@ -1,0 +1,6 @@
+firewall_policies:
+ - { chain: INPUT, jump: DROP }
+ - { chain: FORWARD, jump: DROP }
+ - { chain: OUTPUT, jump: ACCEPT }
+firewall_rules:
+ - { chain: INPUT, proto: tcp, match: tcp, dport: 22, cstate: NEW, jump: ACCEPT }

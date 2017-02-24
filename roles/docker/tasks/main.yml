@@ -1,0 +1,6 @@
+- name: include debian steps
+  include: debian.yml
+  when: ansible_os_family == 'Debian'
+- name: include redhat steps
+  include: redhat.yml
+  when: ansible_os_family == 'RedHat'

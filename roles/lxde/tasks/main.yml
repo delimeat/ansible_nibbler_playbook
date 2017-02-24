@@ -1,0 +1,25 @@
+- name: install lxde packages 
+  apt:
+   name: "{{ item }}" 
+   state: present
+   install_recommends: no
+  with_items:
+   - lubuntu-default-settings
+   - lubuntu-default-session
+   - lubuntu-artwork
+   - lxpanel
+   - lxsession
+   - lxsession-logout
+   - lxterminal
+   - openbox
+   - pcmanfm
+   - xorg
+   - xserver-xorg-input-all
+   - xserver-xorg-video-all
+#   - xserver-xorg-video-vesa
+   - leafpad
+   - gamin
+   - gvfs
+   - xscreensaver
+   - acpi-support
+   - firefox

@@ -1,0 +1,13 @@
+*filter
+{% for policy in firewall_policies %}
+:{{ policy.chain }} {{ policy.jump }} [0:0]
+{% endfor %}
+
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+
+{% for rule in firewall_rules %}
+-A {{ rule.chain }} -p {{ rule.proto }} -m {{ rule.match }} --dport {{ rule.dport }} -m state --state {{ rule.cstate }} -j {{ rule.jump }}
+{% endfor %}
+
+COMMIT

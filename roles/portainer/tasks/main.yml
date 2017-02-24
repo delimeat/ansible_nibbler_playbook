@@ -1,0 +1,21 @@
+- name: create portainer data directory	
+  file:
+   path: /opt/docker/portainer/data
+   state: directory
+   mode: 0755
+- name: start docker
+  systemd:
+   name: docker
+   state: started
+- name: create portainer container
+  docker_container:
+   name: portainer
+   image: "portainer/portainer:latest"
+   pull: false
+   restart_policy: always
+   state: started
+   ports:
+    - "{{ portainer_port }}:9000"
+   volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    - "/opt/docker/portainer/data:/data"

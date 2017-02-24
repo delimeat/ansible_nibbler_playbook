@@ -1,0 +1,17 @@
+- name: install java prereq packages 
+  apt: 
+   name: "{{ item }}"
+   state: present
+  with_items:
+   - software-properties-common 
+- name: add jdownloader repository
+  apt_repository:
+   repo: "ppa:jd-team/jdownloader"
+   state: present
+- name: install jdownloader installer
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+  with_items:
+   - jdownloader-installer
