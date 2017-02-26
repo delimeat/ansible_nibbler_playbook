@@ -9,6 +9,7 @@
    - ca-certificates
    - software-properties-common
    - python-pip
+   - python-pkg-resources
 - name: add docker apt key
   apt_key:
    keyserver: hkp://p80.pool.sks-keyservers.net:80
