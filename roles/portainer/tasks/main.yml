@@ -1,21 +1,28 @@
-- name: create portainer data directory	
-  file:
-   path: /opt/docker/portainer/data
-   state: directory
-   mode: 0755
 - name: start docker
   systemd:
    name: docker
    state: started
+
+- name: create proxy network
+  docker_network:
+    name: proxy_net
+
+- name: create portainer data volume	
+  docker_volume:
+   name: "portainer_data"
+
 - name: create portainer container
   docker_container:
    name: portainer
    image: "portainer/portainer:latest"
+   command: "--no-auth"
    pull: false
-   restart_policy: always
+   restart_policy: unless-stopped
    state: started
    ports:
-    - "{{ portainer_port }}:9000"
+    - 9000:9000
+   networks:
+    - name: proxy_net
    volumes:
     - "/var/run/docker.sock:/var/run/docker.sock"
-    - "/opt/docker/portainer/data:/data"
+    - "portainer_data:/data"

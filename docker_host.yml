@@ -1,6 +1,6 @@
 - hosts: all
   become: yes
-  user: "{{ user }}"
+  remote_user: ubuntu
   gather_facts: no
   pre_tasks:
    - name: bootstrap python for ansible
@@ -8,6 +8,8 @@
      changed_when: False
    - setup: 
   vars:
+   - docker_users:
+     - ubuntu
    - portainer_port: 9000
    - guac_port: 8080
    - ssh_port: 22
