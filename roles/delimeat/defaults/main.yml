@@ -1,2 +1,0 @@
-delimeat_app_dir: '/opt/delimeat'
-delimeat_output_dir: "{{ delimeat_app_dir}}/torrents"

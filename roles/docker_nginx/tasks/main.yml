@@ -1,0 +1,27 @@
+- name: copy default config template
+  template: 
+   src: default.conf.j2 
+   dest: "{{ nginx_dir }}/default.conf"
+  notify:
+   - start nginx
+
+- name: create nginx container
+  docker_container:
+   name: "{{ nginx_container_name }}"
+   image: "{{ nginx_image }}:{{ nginx_image_tag}}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   ports:
+    - "{{ nginx_http_port }}:80"
+    - "{{ nginx_https_port }}:443"
+   networks:
+    - name: "{{ proxy_net_name }}"
+      ipv4_address: "{{ proxy_net_nginx_ip }}"
+   volumes:
+    - "{{ nginx_dir }}/default.conf:/etc/nginx/conf.d/default.conf:ro"
+    - "{{ nginx_dir }}/ssl/:/etc/nginx/ssl/:ro"
+    - "{{ nginx_dir }}/access/:/etc/nginx/access/:ro"
+    - "{{ certbot_letsencrypt_dir }}:/etc/nginx/letsencrypt:ro"
+  notify:
+   - start nginx

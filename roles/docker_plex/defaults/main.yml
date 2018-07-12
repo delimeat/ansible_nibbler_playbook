@@ -1,0 +1,9 @@
+plex_dir: "{{ nfs_dir }}/plex"
+plex_config_dir: "{{ plex_dir }}/config"
+plex_data_dir: "{{ plex_dir }}/data"
+plex_transcode_dir: "{{ plex_dir }}/transcode"
+plex_image: plexinc/pms-docker
+plex_image_tag: latest
+plex_container_name: plex
+plex_hostname: plex
+plex_http_port: 32400

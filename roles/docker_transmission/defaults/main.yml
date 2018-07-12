@@ -1,0 +1,9 @@
+transmission_dir: "{{ nfs_dir }}/transmission"
+transmission_config_dir: "{{ transmission_dir }}/config"
+transmission_downloads_dir: "{{ transmission_dir }}/downloads"
+transmission_watch_dir: "{{ transmission_dir }}/watch"
+transmission_image: linuxserver/transmission
+transmission_image_tag: latest
+transmission_container_name: transmission
+transmission_gid: 1000
+transmission_uid: 1000

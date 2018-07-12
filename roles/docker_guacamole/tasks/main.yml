@@ -1,0 +1,71 @@
+- name: check if initdb.sql exists
+  stat:
+   path: "{{ guac_dir }}/initdb.sql"
+  register: guac_initdb_file
+
+- name: extract sql from guacamole container
+  docker_container:
+   name: guac_temp
+   image: "{{ guac_image }}:{{ guac_image_tag }}"
+   pull: false
+   state: started
+   command: "/bin/sh -c '/opt/guacamole/bin/initdb.sh --mysql > /tmp/initdb.sql'"
+   detach: no
+   interactive: yes
+   tty: yes
+   recreate: yes
+   cleanup: yes
+   volumes:
+    - "{{ guac_dir }}:/tmp"
+  when: not guac_initdb_file.stat.exists
+
+- name: create guacamole network
+  docker_network:
+    name: guac_net
+
+- name: create guac_db container
+  docker_container:
+   name: "{{ guac_db_container_name }}"
+   image: "{{ guac_db_image }}:{{ guac_db_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   user: "{{ guac_db_uid }}:{{ guac_db_gid }}"
+   networks:
+    - name: guac_net
+   volumes:
+    - "{{ guac_dir }}/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro"
+    - "{{ guac_db_dir }}:/var/lib/mysql"
+   env:
+    MYSQL_ROOT_PASSWORD: "{{ guac_db_root_pwd }}"
+    MYSQL_DATABASE: "{{ guac_db_name }}"
+    MYSQL_USER: "{{ guac_db_usr }}"
+    MYSQL_PASSWORD: "{{ guac_db_pwd }}"
+
+- name: create guacd container
+  docker_container:
+   name: "{{ guacd_container_name }}"
+   image: "{{ guacd_image }}:{{ guacd_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   networks:
+    - name: guac_net
+
+- name: create guacamole container
+  docker_container:
+   name: "{{ guac_container_name }}"
+   image: "{{ guac_image }}:{{ guac_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   networks:
+    - name: guac_net
+    - name: "{{ proxy_net_name }}"
+      ipv4_address: "{{ proxy_net_guacamole_ip }}"
+   env:
+    MYSQL_HOSTNAME: "{{ guac_db_container_name }}"
+    MYSQL_DATABASE: "{{ guac_db_name }}"
+    MYSQL_USER: "{{ guac_db_usr }}"
+    MYSQL_PASSWORD: "{{ guac_db_pwd }}"
+    GUACD_HOSTNAME: "{{ guacd_container_name }}"

@@ -1,0 +1,4 @@
+vpn_client_dir: "{{ nfs_dir }}/vpn_client"
+vpn_client_image: dperson/openvpn-client
+vpn_client_image_tag: latest
+vpn_client_container_name: vpn_client

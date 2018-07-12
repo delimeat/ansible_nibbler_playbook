@@ -1,2 +1,0 @@
-transmission_systemd_dir: /etc/systemd/system/transmission-daemon.service.d
-transmission_systemd_conf: 10-override-exec.conf

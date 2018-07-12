@@ -1,6 +1,5 @@
 - hosts: all
   become: yes
-  remote_user: ubuntu
   gather_facts: no
   pre_tasks:
    - name: bootstrap python for ansible
@@ -9,15 +8,58 @@
    - setup: 
   vars:
    - docker_users:
-     - ubuntu
-   - portainer_port: 9000
-   - guac_port: 8080
+     - "{{ ansible_user }}"
+   - proxy_net_nginx_ip: 172.18.0.2
+   - proxy_net_guacamole_ip: 172.18.0.3
+   - proxy_net_pihole_ip: 172.18.0.4
+   - proxy_net_plex_ip: 172.18.0.5
+   - proxy_net_portainer_ip: 172.18.0.6
+   - proxy_net_vpn_client_ip: 172.18.0.7
+   - proxy_net_nextcloud_ip: 172.18.0.8 
+   - nginx_http_port: 80
+   - nginx_https_port: 443
+   - nginx_proxy:
+     - { subdomain: guac, host: "{{ proxy_net_guacamole_ip }}", port: 8080, extras: ["proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/guacamole/" } ] }
+     - { subdomain: pihole, host: "{{ proxy_net_pihole_ip }}", port: 80, extras: [], locations: [{ path: "/", endpoint: "/admin/" } ] }
+     - { subdomain: plex, host: "{{ proxy_net_plex_ip }}", port: "{{ plex_http_port }}", extras: ["proxy_cookie_path /web/ /plex/web/", "proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/" } ] }
+     - { subdomain: port, host: "{{ proxy_net_portainer_ip }}", port: 9000, extras: [], locations: [ {path: "/", endpoint: "/"}, { path: "/api/websocket/", endpoint: "/api/websocket/"} ] }
+     - { subdomain: trans, host: "{{ proxy_net_vpn_client_ip }}", port: 9091, extras: [], locations: [ { path: "/rpc", endpoint: "/transmission/rpc" }, {path: "/upload", endpoint: "/transmission/upload"}, { path: "/", endpoint: "/transmission/web/" } ] }
+     - { subdomain: sonarr, host: "{{ proxy_net_vpn_client_ip }}", port: 8989, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
+     - { subdomain: radarr, host: "{{ proxy_net_vpn_client_ip }}", port: 7878, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
+     - { subdomain: jackett, host: "{{ proxy_net_vpn_client_ip }}", port: 9117, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
+     - { subdomain: cloud, host: "{{ proxy_net_nextcloud_ip }}", port: 80, extras: ["proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/"} ] }
    - ssh_port: 22
-   - firewall_rules:
-     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ ssh_port }}", cstate: NEW, jump: ACCEPT }
-     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ portainer_port }}", cstate: NEW, jump: ACCEPT }
-     - { chain: INPUT, proto: tcp, match: tcp, dport: "{{ guac_port }}", cstate: NEW, jump: ACCEPT }
+   - plex_http_port: 32400
+   - pihole_dns_port: 53
+   - ufw_rules:
+      - { rule: allow, port: "{{ ssh_port }}", proto: tcp }
+      - { rule: allow, port: "{{ nginx_http_port }}", proto: tcp }
+      - { rule: allow, port: "{{ nginx_https_port }}", proto: tcp }
+      - { rule: allow, port: "{{ pihole_dns_port }}", proto: tcp }
+      - { rule: allow, port: "{{ pihole_dns_port }}", proto: udp }
+      - { rule: allow, port: "{{ plex_http_port }}", proto: tcp }
+      - { rule: allow, port: 3005, proto: tcp }
+      - { rule: allow, port: 8324, proto: tcp }
+      - { rule: allow, port: 32469, proto: tcp }
+      - { rule: allow, port: 1900, proto: udp }
+      - { rule: allow, port: 32410, proto: udp }
+      - { rule: allow, port: 32412, proto: udp }
+      - { rule: allow, port: 32413, proto: udp }
+      - { rule: allow, port: 32414, proto: udp }
   roles:
    - common
-   - portainer
-   - guacamole
+   - ufw
+   - nfs
+   - ddclient
+   - docker_certbot
+   - docker_nginx
+   - docker_pihole
+   - docker_portainer
+   - docker_guacamole
+   - docker_plex
+   - docker_vpn_client
+   - docker_transmission
+   - docker_sonarr
+   - docker_radarr
+   - docker_jackett
+   - docker_nextcloud

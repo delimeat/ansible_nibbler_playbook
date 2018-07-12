@@ -1,0 +1,8 @@
+sonarr_dir: "{{ nfs_dir }}/sonarr"
+sonarr_config_dir: "{{ sonarr_dir }}/config"
+sonarr_tv_dir: "{{ plex_data_dir }}/tv"
+sonarr_image: linuxserver/sonarr
+sonarr_image_tag: latest
+sonarr_container_name: sonarr
+sonarr_gid: 1000
+sonarr_uid: 1000

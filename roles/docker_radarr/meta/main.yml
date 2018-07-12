@@ -1,0 +1,6 @@
+dependencies:
+  - docker
+  - docker_vpn_client
+  - docker_transmission
+  - docker_plex
+  - nfs

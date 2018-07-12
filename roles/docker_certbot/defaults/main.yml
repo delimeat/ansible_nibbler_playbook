@@ -1,0 +1,9 @@
+certbot_prerequisites:
+ - cron
+certbot_dir: "{{ nfs_dir }}/certbot"
+certbot_letsencrypt_dir: "{{ certbot_dir }}/letsencrypt"
+certbot_cloudflare_credentials: cloudflare.ini
+certbot_image: certbot/dns-cloudflare
+certbot_image_tag: latest
+certbot_container_name: certbot
+certbot_server: https://acme-v02.api.letsencrypt.org/directory

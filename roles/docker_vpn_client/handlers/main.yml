@@ -1,0 +1,4 @@
+- name: restart vpn client
+  docker_container:
+   name: "{{ vpn_client_container_name }}"
+   restart: true

@@ -1,5 +1,0 @@
-- name: restart transmission-daemon
-  systemd:
-   name: transmission-daemon
-   state: restarted
-   daemon_reload: yes

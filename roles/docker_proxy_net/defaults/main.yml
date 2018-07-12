@@ -1,0 +1,4 @@
+proxy_net_name: proxy_net
+proxy_net_subnet: '172.18.0.0/16'
+proxy_net_gateway: 172.18.0.1
+proxy_net_iprange: '172.18.0.0/24'

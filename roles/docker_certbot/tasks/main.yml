@@ -1,0 +1,29 @@
+- name: install certbot prerequisites
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+   install_recommends: no
+  with_items: "{{ certbot_prerequisites }}"
+
+- name: create certbot container
+  docker_container:
+   name: "{{ certbot_container_name }}"
+   image: "{{ certbot_image }}:{{ certbot_image_tag }}"
+   command: "certonly --dns-cloudflare --dns-cloudflare-credentials /tmp/{{ certbot_cloudflare_credentials }} --server {{ certbot_server }} -d {{ certbot_domain }} -d *.{{ certbot_domain }} --email {{ certbot_email }} --agree-tos --no-eff-email --force-renewal"
+   pull: false
+   restart_policy: no
+   state: present
+   volumes:
+    - "{{ certbot_dir }}/{{ certbot_cloudflare_credentials }}:/tmp/{{ certbot_cloudflare_credentials }}:ro"
+    - "{{ certbot_letsencrypt_dir }}:/etc/letsencrypt"
+
+- name: create cron task for certbot
+  cron:
+    name: "run certbot"
+    job: docker start {{ certbot_container_name }} >> /var/log/certbot.log 2>&1
+    minute: "0"
+    hour: "0"
+    day: "15"
+    month: "*"
+    weekday: "*"

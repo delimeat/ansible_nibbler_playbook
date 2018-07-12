@@ -1,0 +1,10 @@
+pihole_dir: "{{ nfs_dir }}/pihole"
+pihole_config_dir: "{{ pihole_dir }}/config/"
+pihole_dnsmasq_dir: "{{ pihole_dir }}/dnsmasq.d/"
+pihole_hhtp_port: 8181
+pihole_dns_port: 53
+pihole_image: diginc/pi-hole
+pihole_image_tag: latest
+pihole_container_name: pihole
+pihole_hostname: pihole
+pihole_password: ""

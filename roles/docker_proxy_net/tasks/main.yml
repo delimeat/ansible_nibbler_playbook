@@ -1,0 +1,9 @@
+- name: create proxy network
+  docker_network:
+    name: "{{ proxy_net_name }}"
+    driver_options:
+     com.docker.network.bridge.name: "{{ proxy_net_name }}"
+    ipam_options:
+     subnet: "{{ proxy_net_subnet }}"
+     gateway: "{{ proxy_net_gateway }}"
+     iprange: "{{ proxy_net_iprange }}"

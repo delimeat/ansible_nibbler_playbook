@@ -1,0 +1,49 @@
+- name: install ddclient prerequisites
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+   install_recommends: no
+  with_items: "{{ ddclient_prequisites }}"
+
+- name: download ddclient 
+  get_url:
+   url: https://raw.githubusercontent.com/ddclient/ddclient/master/ddclient
+   dest: /usr/bin/ddclient
+   mode: "u=rwx,g=rx,o=rx"
+   owner: root
+   group: root
+
+- name: create /etc/ddclient directory
+  file:
+   path: /etc/ddclient
+   state: directory
+   mode: "u=rwx,g=rx,o=rx"
+   owner: root
+   group: root
+
+- name: Copy ddclient.conf to /etc/ddclient
+  template: 
+   src: ddclient.conf.j2 
+   dest: /etc/ddclient/ddclient.conf
+   mode: "u=rw,g=,o="
+   owner: root
+   group: root
+ 
+- name: create /var/cache/ddclient directory
+  file:
+   path: /var/cache/ddclient
+   state: directory
+   mode: "u=rwx,g=rx,o=rx"
+   owner: root
+   group: root 
+
+- name: create cron tasks for ddclient
+  cron:
+    name: "run ddclient"
+    job: ddclient --force >> /var/log/ddclient.log 2>&1
+    minute: "*/5"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"

@@ -1,0 +1,4 @@
+dependencies:
+  - docker
+  - docker_proxy_net
+  - nfs

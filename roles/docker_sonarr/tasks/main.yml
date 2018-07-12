@@ -1,0 +1,17 @@
+- name: create sonarr container
+  docker_container:
+   name: "{{ sonarr_container_name }}"
+   image: "{{ sonarr_image }}:{{ sonarr_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   network_mode: "container:{{ vpn_client_container_name }}"
+   volumes:
+    - "{{ sonarr_config_dir }}:/config"
+    - "{{ transmission_downloads_dir }}:/downloads"
+    - "{{ sonarr_tv_dir }}:/tv"
+    - /etc/localtime:/etc/localtime:ro
+   env:
+    PGID: "{{ sonarr_gid }}"
+    PUID: "{{ sonarr_uid }}"
+    TZ: "{{ linuxserver_tz }}"

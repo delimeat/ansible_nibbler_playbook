@@ -1,0 +1,16 @@
+- name: create transmission container
+  docker_container:
+   name: "{{ transmission_container_name }}"
+   image: "{{ transmission_image }}:{{ transmission_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   network_mode: "container:{{ vpn_client_container_name }}"
+   volumes:
+    - "{{ transmission_config_dir }}:/config"
+    - "{{ transmission_downloads_dir }}:/downloads"
+    - "{{ transmission_watch_dir }}:/watch"
+   env:
+    PGID: "{{ transmission_gid }}"
+    PUID: "{{ transmission_uid }}"
+    TZ: "{{ linuxserver_tz }}"

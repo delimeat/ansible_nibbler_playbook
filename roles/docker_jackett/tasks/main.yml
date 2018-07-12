@@ -1,0 +1,15 @@
+- name: create jackett container
+  docker_container:
+   name: "{{ jackett_container_name }}"
+   image: "{{ jackett_image }}:{{ jackett_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   network_mode: "container:{{ vpn_client_container_name }}"
+   volumes:
+    - "{{ jackett_config_dir }}:/config"
+    - "{{ transmission_watch_dir }}:/downloads"
+   env:
+    PGID: "{{ jackett_gid }}"
+    PUID: "{{ jackett_uid }}"
+    TZ: "{{ linuxserver_tz }}"

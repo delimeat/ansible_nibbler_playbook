@@ -1,0 +1,20 @@
+- name: create pihole container
+  docker_container:
+   name: "{{ pihole_container_name }}"
+   image: "{{ pihole_image }}:{{ pihole_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   hostname: "{{ pihole_hostname }}"
+   networks:
+    - name: "{{ proxy_net_name }}"
+      ipv4_address: "{{ proxy_net_pihole_ip }}"
+   ports:
+    - "{{ pihole_dns_port }}:53/tcp"
+    - "{{ pihole_dns_port }}:53/udp"
+   env:
+    ServerIP: "{{ ansible_default_ipv4.address }}"
+    WEBPASSWORD: "{{ pihole_password }}"
+   volumes:
+    - "{{ pihole_config_dir }}:/etc/pihole"
+    - "{{ pihole_dnsmasq_dir }}:/etc/dnsmasq.d"

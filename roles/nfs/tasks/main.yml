@@ -1,0 +1,21 @@
+- name: install nfs prerequisites
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+   install_recommends: no
+  with_items: "{{ nfs_prequisites }}"
+
+- name: create nfs directory
+  file:
+   path: "{{ nfs_dir }}"
+   state: directory
+  notify:
+
+- name: configure /etc/fstab for nfs share
+  mount:
+   path: "{{ nfs_dir }}"
+   src: "{{ nfs_host }}:{{ nfs_path }}"
+   fstype: nfs
+   opts: "{{ nfs_opts }}"
+   state: mounted

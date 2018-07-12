@@ -1,0 +1,18 @@
+nextcloud_port: 80
+nextcloud_dir: "{{ nfs_dir }}/nextcloud"
+nextcloud_app_dir: "{{ nextcloud_dir }}/app/"
+nextcloud_net_name: nextcloud_net
+nextcloud_db_dir: "{{ nextcloud_dir }}/db/"
+nextcloud_db_image: mariadb
+nextcloud_db_image_tag: latest
+nextcloud_db_container_name: nextcloud_db
+nextcloud_db_root_pwd: nextcloud
+nextcloud_db_name: nextcloud
+nextcloud_db_usr: nextcloud
+nextcloud_db_pwd: nextcloud
+nextcloud_db_gid: 1000
+nextcloud_db_uid: 1000
+nextcloud_image: nextcloud
+nextcloud_image_tag: apache
+nextcloud_container_name: nextcloud
+nextcloud_user: admin

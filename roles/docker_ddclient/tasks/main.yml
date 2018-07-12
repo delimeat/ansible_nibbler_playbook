@@ -1,0 +1,12 @@
+- name: create ddclient container
+  docker_container:
+   name: "{{ ddclient_container_name }}"
+   image: "{{ ddclient_image }}:{{ ddclient_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   volumes:
+    - "{{ ddclient_dir }}:/config"
+   env:
+    PGID: "{{ ddclient_gid }}"
+    PUID: "{{ ddclient_uid }}"

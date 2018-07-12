@@ -1,0 +1,12 @@
+ffmpeg_git_image: alpine/git
+ffmpeg_git_image_tag: latest
+ffmpeg_repo: "https://github.com/delimeat/convert2mp4.git"
+ffmpeg_git_dir: "ffmpeg"
+ffmpeg_dir: "{{ nfs_dir }}/ffmpeg"
+ffmpeg_process_dir: "{{ ffmpeg_dir }}/process"
+ffmpeg_error_dir: "{{ ffmpeg_dir }}/error"
+ffmpeg_archive_dir: "{{ ffmpeg_dir }}/archive"
+ffmpeg_output_dir: "{{ ffmpeg_dir }}/output"
+ffmpeg_image: ffmpeg
+ffmpeg_image_tag: latest
+ffmpeg_container_name: ffmpeg

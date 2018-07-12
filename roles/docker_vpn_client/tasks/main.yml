@@ -1,0 +1,17 @@
+- name: create vpn client container
+  docker_container:
+   name: "{{ vpn_client_container_name }}"
+   image: "{{ vpn_client_image }}:{{ vpn_client_image_tag }}"
+   command: -f ""
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   networks:
+    - name: "{{ proxy_net_name }}"
+      ipv4_address: "{{ proxy_net_vpn_client_ip }}"
+   volumes:
+    - "{{ vpn_client_dir }}:/vpn"
+   capabilities:
+    - NET_ADMIN
+   devices:
+    - /dev/net/tun:/dev/net/tun

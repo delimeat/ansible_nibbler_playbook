@@ -1,0 +1,4 @@
+nfs_prequisites:
+ - nfs-common
+nfs_dir: /mnt/shared
+nfs_opts: defaults,x-systemd.autmount,noauto

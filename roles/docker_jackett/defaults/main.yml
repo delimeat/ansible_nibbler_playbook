@@ -1,0 +1,7 @@
+jackett_dir: "{{ nfs_dir }}/jackett"
+jackett_config_dir: "{{ jackett_dir }}/config"
+jackett_image: linuxserver/jackett
+jackett_image_tag: latest
+jackett_container_name: jackett
+jackett_gid: 1000
+jackett_uid: 1000

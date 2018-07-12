@@ -1,0 +1,8 @@
+radarr_dir: "{{ nfs_dir }}/radarr"
+radarr_config_dir: "{{ radarr_dir }}/config"
+radarr_movies_dir: "{{ plex_data_dir }}/movies"
+radarr_image: linuxserver/radarr
+radarr_image_tag: latest
+radarr_container_name: radarr
+radarr_gid: 1000
+radarr_uid: 1000

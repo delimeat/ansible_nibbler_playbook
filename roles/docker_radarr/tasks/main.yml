@@ -1,0 +1,17 @@
+- name: create radarr container
+  docker_container:
+   name: "{{ radarr_container_name }}"
+   image: "{{ radarr_image }}:{{ radarr_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   network_mode: "container:{{ vpn_client_container_name }}"
+   volumes:
+    - "{{ radarr_config_dir }}:/config"
+    - "{{ transmission_downloads_dir }}:/downloads"
+    - "{{ radarr_movies_dir }}:/movies"
+    - /etc/localtime:/etc/localtime:ro
+   env:
+    PGID: "{{ radarr_gid }}"
+    PUID: "{{ radarr_uid }}"
+    TZ: "{{ linuxserver_tz }}"

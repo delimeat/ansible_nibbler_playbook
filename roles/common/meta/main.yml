@@ -1,2 +1,2 @@
-dependencies:
-  - { role: iptables, ssh_port: 22 }
+#dependencies:
+#  - { role: iptables, ssh_port: 22 }

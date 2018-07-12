@@ -1,0 +1,7 @@
+ddclient_prequisites:
+ - perl
+ - libdata-validate-ip-perl
+ - libio-socket-ssl-perl
+ - libnet-libidn-perl
+ - libnet-ssleay-perl
+ - cron

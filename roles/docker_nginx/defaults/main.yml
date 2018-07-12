@@ -1,0 +1,6 @@
+nginx_dir: "{{ nfs_dir }}/nginx"
+nginx_image: nginx
+nginx_image_tag: alpine
+nginx_container_name: nginx
+nginx_http_port: 80
+nginx_https_port: 443

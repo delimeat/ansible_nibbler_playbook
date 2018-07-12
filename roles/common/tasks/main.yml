@@ -2,6 +2,7 @@
   hostname:
    name: "{{ hostname }}"
   when: hostname is defined
+
 - name: set timezone
   timezone:
    name: "{{ host_tz }}"

@@ -1,0 +1,8 @@
+ufw_prerequisites:
+ - ufw
+ufw_default_rules:
+ - { direction: incoming, policy: deny }
+ - { direction: outgoing, policy: allow }
+ - { direction: routed, policy: deny }
+ufw_rules:
+ - { rule: allow, port: "{{ ssh_port }}", proto: tcp }
