@@ -1,9 +1,0 @@
-delimeat_git_image: alpine/git
-delimeat_git_image_tag: latest
-delimeat_repo: "https://github.com/delimeat/docker-delimeat.git"
-delimeat_git_dir: "docker-delimeat"
-delimeat_dir: "{{ nfs_dir }}/delimeat"
-delimeat_data_dir: "{{ delimeat_dir }}/data"
-delimeat_image: delimeat
-delimeat_image_tag: latest
-delimeat_container_name: delimeat

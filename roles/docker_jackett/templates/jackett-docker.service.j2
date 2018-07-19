@@ -1,0 +1,16 @@
+[Unit]
+Description=Jackett Docker
+RequiresMountsFor={{ jackett_dir }}
+Requires=docker.service vpn-client-docker.service
+After=docker.service vpn-client-docker.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ jackett_container_name }}
+ExecStart=/usr/bin/docker start -a {{ jackett_container_name }}
+ExecStop=/usr/bin/docker stop {{ jackett_container_name }}
+ExecReload=/usr/bin/docker restart {{ jackett_container_name }}
+
+[Install]
+WantedBy=multi-user.target

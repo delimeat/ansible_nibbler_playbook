@@ -1,14 +1,39 @@
+- name: copy service template
+  template: 
+   src: portainer-docker.service.j2 
+   dest: "/etc/systemd/system/portainer-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart portainer
+
+- name: reload systemd daemon
+  systemd:
+   name: portainer-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
+
 - name: create portainer container
   docker_container:
    name: "{{ portainer_container_name }}"
    image: "{{ portainer_image }}:{{ portainer_image_tag }}"
    command: "--no-auth"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    networks:
     - name: "{{ proxy_net_name }}"
       ipv4_address: "{{ proxy_net_portainer_ip }}"
    volumes:
     - "/var/run/docker.sock:/var/run/docker.sock"
     - "{{ portainer_dir }}:/data"
+  notify:
+   - restart portainer
+
+- name: start portainer
+  systemd:
+   name: portainer-docker.service
+   state: started
+   enabled: yes

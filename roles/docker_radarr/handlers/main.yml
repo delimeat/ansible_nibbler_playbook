@@ -1,0 +1,4 @@
+- name: restart radarr
+  systemd:
+   name: radarr-docker
+   state: restarted

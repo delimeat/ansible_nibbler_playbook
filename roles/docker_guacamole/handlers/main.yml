@@ -1,0 +1,14 @@
+- name: restart guacamole db
+  systemd:
+   name: guacamole-db-docker
+   state: restarted
+
+- name: restart guacd
+  systemd:
+   name: guacd-docker
+   state: restarted
+
+- name: restart guacamole app
+  systemd:
+   name: guacamole-docker
+   state: restarted

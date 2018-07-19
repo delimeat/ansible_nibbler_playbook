@@ -1,0 +1,4 @@
+- name: restart jackett
+  systemd:
+   name: jackett-docker
+   state: restarted

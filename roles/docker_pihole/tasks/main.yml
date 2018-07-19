@@ -1,10 +1,27 @@
+- name: copy service template
+  template: 
+   src: pihole-docker.service.j2 
+   dest: "/etc/systemd/system/pihole-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart pihole
+
+- name: reload systemd daemon
+  systemd:
+   name: pihole-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
+
 - name: create pihole container
   docker_container:
    name: "{{ pihole_container_name }}"
    image: "{{ pihole_image }}:{{ pihole_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    hostname: "{{ pihole_hostname }}"
    networks:
     - name: "{{ proxy_net_name }}"
@@ -18,3 +35,11 @@
    volumes:
     - "{{ pihole_config_dir }}:/etc/pihole"
     - "{{ pihole_dnsmasq_dir }}:/etc/dnsmasq.d"
+  notify:
+   - restart pihole
+
+- name: start pihole
+  systemd:
+   name: pihole-docker
+   state: started
+   enabled: yes

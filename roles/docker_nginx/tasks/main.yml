@@ -1,17 +1,34 @@
+- name: copy service template
+  template: 
+   src: nginx-docker.service.j2 
+   dest: "/etc/systemd/system/nginx-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart nginx
+
+- name: reload systemd daemon
+  systemd:
+   name: nginx-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
+
 - name: copy default config template
   template: 
    src: default.conf.j2 
    dest: "{{ nginx_dir }}/default.conf"
   notify:
-   - start nginx
+   - restart nginx
 
 - name: create nginx container
   docker_container:
    name: "{{ nginx_container_name }}"
    image: "{{ nginx_image }}:{{ nginx_image_tag}}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    ports:
     - "{{ nginx_http_port }}:80"
     - "{{ nginx_https_port }}:443"
@@ -24,4 +41,10 @@
     - "{{ nginx_dir }}/access/:/etc/nginx/access/:ro"
     - "{{ certbot_letsencrypt_dir }}:/etc/nginx/letsencrypt:ro"
   notify:
-   - start nginx
+   - restart nginx
+
+- name: start nginx
+  systemd:
+   name: nginx-docker
+   state: started
+   enabled: yes

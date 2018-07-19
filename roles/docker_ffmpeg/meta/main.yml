@@ -1,4 +1,0 @@
-dependencies:
-  - docker
-  - docker_transmission
-  - nfs

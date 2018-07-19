@@ -1,0 +1,4 @@
+- name: restart portainer
+  systemd:
+   name: portainer-docker.service
+   state: restarted

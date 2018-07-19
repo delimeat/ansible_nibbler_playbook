@@ -1,10 +1,27 @@
+- name: copy service template
+  template: 
+   src: sonarr-docker.service.j2 
+   dest: "/etc/systemd/system/sonarr-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart sonarr
+
+- name: reload systemd daemon
+  systemd:
+   name: sonarr-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
+
 - name: create sonarr container
   docker_container:
    name: "{{ sonarr_container_name }}"
    image: "{{ sonarr_image }}:{{ sonarr_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    network_mode: "container:{{ vpn_client_container_name }}"
    volumes:
     - "{{ sonarr_config_dir }}:/config"
@@ -15,3 +32,11 @@
     PGID: "{{ sonarr_gid }}"
     PUID: "{{ sonarr_uid }}"
     TZ: "{{ linuxserver_tz }}"
+  notify:
+   - restart sonarr
+
+- name: start sonarr
+  systemd:
+   name: sonarr-docker
+   state: started
+   enabled: yes

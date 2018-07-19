@@ -1,0 +1,4 @@
+- name: restart sonarr
+  systemd:
+   name: sonarr-docker
+   state: restarted

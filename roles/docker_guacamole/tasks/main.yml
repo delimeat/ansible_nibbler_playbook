@@ -23,13 +23,30 @@
   docker_network:
     name: guac_net
 
+- name: copy db service template
+  template: 
+   src: guacamole-db-docker.service.j2 
+   dest: "/etc/systemd/system/guacamole-db-docker.service"
+   mode: 0755
+  register:
+   copy_db_template
+  notify:
+   - restart guacamole db
+
+- name: reload db systemd daemon
+  systemd:
+   name: guacamole-db-docker
+   daemon_reload: yes
+  when:
+   copy_db_template.changed
+
 - name: create guac_db container
   docker_container:
    name: "{{ guac_db_container_name }}"
    image: "{{ guac_db_image }}:{{ guac_db_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    user: "{{ guac_db_uid }}:{{ guac_db_gid }}"
    networks:
     - name: guac_net
@@ -41,24 +58,62 @@
     MYSQL_DATABASE: "{{ guac_db_name }}"
     MYSQL_USER: "{{ guac_db_usr }}"
     MYSQL_PASSWORD: "{{ guac_db_pwd }}"
+  notify:
+   - restart guacamole db
+
+- name: copy guacd service template
+  template: 
+   src: guacd-docker.service.j2 
+   dest: "/etc/systemd/system/guacd-docker.service"
+   mode: 0755
+  register:
+   copy_guacd_template
+  notify:
+   - restart guacd
+
+- name: reload guacd systemd daemon
+  systemd:
+   name: guacd-docker
+   daemon_reload: yes
+  when:
+   copy_guacd_template.changed
 
 - name: create guacd container
   docker_container:
    name: "{{ guacd_container_name }}"
    image: "{{ guacd_image }}:{{ guacd_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    networks:
     - name: guac_net
+  notify:
+   - restart guacd
+
+- name: copy app service template
+  template: 
+   src: guacamole-docker.service.j2 
+   dest: "/etc/systemd/system/guacamole-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart guacamole app
+
+- name: reload guacamole systemd daemon
+  systemd:
+   name: guacamole-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
 
 - name: create guacamole container
   docker_container:
    name: "{{ guac_container_name }}"
    image: "{{ guac_image }}:{{ guac_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    networks:
     - name: guac_net
     - name: "{{ proxy_net_name }}"
@@ -69,3 +124,23 @@
     MYSQL_USER: "{{ guac_db_usr }}"
     MYSQL_PASSWORD: "{{ guac_db_pwd }}"
     GUACD_HOSTNAME: "{{ guacd_container_name }}"
+  notify:
+   - restart guacamole app
+
+- name: start guac db
+  systemd:
+   name: guacamole-db-docker
+   state: started
+   enabled: yes
+
+- name: start guacd
+  systemd:
+   name: guacd-docker
+   state: started
+   enabled: yes
+
+- name: start guacamole
+  systemd:
+   name: guacamole-docker
+   state: started
+   enabled: yes

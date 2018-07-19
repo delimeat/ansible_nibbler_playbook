@@ -1,0 +1,4 @@
+- name: restart pihole
+  systemd:
+   name: pihole-docker
+   state: restarted

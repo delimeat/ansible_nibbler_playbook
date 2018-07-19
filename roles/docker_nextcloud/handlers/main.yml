@@ -1,0 +1,9 @@
+- name: restart nextcloud db
+  systemd:
+   name: nextcloud-db-docker
+   state: restarted
+
+- name: restart nextcloud app
+  systemd:
+   name: nextcloud-docker
+   state: restarted

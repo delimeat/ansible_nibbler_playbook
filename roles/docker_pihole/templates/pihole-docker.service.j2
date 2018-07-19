@@ -1,0 +1,16 @@
+[Unit]
+Description=Pihole Docker
+RequiresMountsFor={{ pihole_dir }}
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ pihole_container_name }}
+ExecStart=/usr/bin/docker start -a {{ pihole_container_name }}
+ExecStop=/usr/bin/docker stop {{ pihole_container_name }}
+ExecReload=/usr/bin/docker restart {{ pihole_container_name }}
+
+[Install]
+WantedBy=multi-user.target

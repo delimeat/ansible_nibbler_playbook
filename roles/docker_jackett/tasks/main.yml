@@ -1,10 +1,27 @@
+- name: copy service template
+  template: 
+   src: jackett-docker.service.j2 
+   dest: "/etc/systemd/system/jackett-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart jackett
+
+- name: reload systemd daemon
+  systemd:
+   name: jackett-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
+
 - name: create jackett container
   docker_container:
    name: "{{ jackett_container_name }}"
    image: "{{ jackett_image }}:{{ jackett_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    network_mode: "container:{{ vpn_client_container_name }}"
    volumes:
     - "{{ jackett_config_dir }}:/config"
@@ -13,3 +30,11 @@
     PGID: "{{ jackett_gid }}"
     PUID: "{{ jackett_uid }}"
     TZ: "{{ linuxserver_tz }}"
+  notify:
+   - restart jackett
+
+- name: start jackett
+  systemd:
+   name: jackett-docker
+   state: started
+   enabled: yes

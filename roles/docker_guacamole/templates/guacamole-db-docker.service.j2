@@ -1,0 +1,17 @@
+[Unit]
+Description=Guacamole DB Docker
+RequiresMountsFor={{ guac_dir }}
+Requires=docker.service
+Before=guacamole-docker.service
+After=docker.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ guac_db_container_name }}
+ExecStart=/usr/bin/docker start -a {{ guac_db_container_name }}
+ExecStop=/usr/bin/docker stop {{ guac_db_container_name }}
+ExecReload=/usr/bin/docker restart {{ guac_db_container_name }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+- name: restart plex
+  systemd:
+   name: plex-docker
+   state: restarted

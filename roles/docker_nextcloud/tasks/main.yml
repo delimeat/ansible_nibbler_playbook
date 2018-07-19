@@ -2,13 +2,34 @@
   docker_network:
     name: "{{ nextcloud_net_name }}"
 
+- name: create nextcloud html volume
+  docker_volume:
+   name: nextcloud_html
+
+- name: copy db service template
+  template: 
+   src: nextcloud-db-docker.service.j2 
+   dest: "/etc/systemd/system/nextcloud-db-docker.service"
+   mode: 0755
+  register:
+   copy_db_template
+  notify:
+   - restart nextcloud db
+
+- name: reload db systemd daemon
+  systemd:
+   name: nextcloud-db-docker
+   daemon_reload: yes
+  when:
+   copy_db_template.changed
+
 - name: create nextcloud db container
   docker_container:
    name: "{{ nextcloud_db_container_name }}"
    image: "{{ nextcloud_db_image }}:{{ nextcloud_db_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    user: "{{ nextcloud_db_uid }}:{{ nextcloud_db_gid }}"
    networks:
     - name: "{{ nextcloud_net_name }}"
@@ -19,18 +40,33 @@
     MYSQL_DATABASE: "{{ nextcloud_db_name }}"
     MYSQL_USER: "{{ nextcloud_db_usr }}"
     MYSQL_PASSWORD: "{{ nextcloud_db_pwd }}"
+  notify:
+   - restart nextcloud db
 
-- name: create nextcloud html volume
-  docker_volume:
-   name: nextcloud_html
+- name: copy app service template
+  template: 
+   src: nextcloud-docker.service.j2 
+   dest: "/etc/systemd/system/nextcloud-docker.service"
+   mode: 0755
+  register:
+   copy_template
+  notify:
+   - restart nextcloud app
+
+- name: reload systemd daemon
+  systemd:
+   name: nextcloud-docker
+   daemon_reload: yes
+  when:
+   copy_template.changed
 
 - name: create nextcloud container
   docker_container:
    name: "{{ nextcloud_container_name }}"
    image: "{{ nextcloud_image }}:{{ nextcloud_image_tag }}"
    pull: false
-   restart_policy: unless-stopped
-   state: started
+   restart_policy: no
+   state: present
    hostname: nextcloud
    networks:
     - name: "{{ nextcloud_net_name }}"
@@ -50,3 +86,17 @@
     NEXTCLOUD_ADMIN_USER: "{{ nextcloud_user }}"
     NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_password }}"
     NEXTCLOUD_DATA_DIR: "/var/www/html/data"
+  notify:
+   - restart nextcloud app
+
+- name: start nextcloud db
+  systemd:
+   name: nextcloud-db-docker
+   state: started
+   enabled: yes
+
+- name: start nextcloud app
+  systemd:
+   name: nextcloud-docker
+   state: started
+   enabled: yes

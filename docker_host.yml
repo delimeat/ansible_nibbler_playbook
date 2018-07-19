@@ -6,6 +6,8 @@
      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
      changed_when: False
    - setup: 
+  vars_files:
+   - docker_vars.yml
   vars:
    - docker_users:
      - "{{ ansible_user }}"
@@ -21,13 +23,13 @@
    - nginx_proxy:
      - { subdomain: guac, host: "{{ proxy_net_guacamole_ip }}", port: 8080, extras: ["proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/guacamole/" } ] }
      - { subdomain: pihole, host: "{{ proxy_net_pihole_ip }}", port: 80, extras: [], locations: [{ path: "/", endpoint: "/admin/" } ] }
-     - { subdomain: plex, host: "{{ proxy_net_plex_ip }}", port: "{{ plex_http_port }}", extras: ["proxy_cookie_path /web/ /plex/web/", "proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/" } ] }
-     - { subdomain: port, host: "{{ proxy_net_portainer_ip }}", port: 9000, extras: [], locations: [ {path: "/", endpoint: "/"}, { path: "/api/websocket/", endpoint: "/api/websocket/"} ] }
-     - { subdomain: trans, host: "{{ proxy_net_vpn_client_ip }}", port: 9091, extras: [], locations: [ { path: "/rpc", endpoint: "/transmission/rpc" }, {path: "/upload", endpoint: "/transmission/upload"}, { path: "/", endpoint: "/transmission/web/" } ] }
+     - { subdomain: plex, host: "{{ proxy_net_plex_ip }}", port: "{{ plex_http_port }}", extras: ["proxy_cookie_path /web/ /plex/web/", "proxy_buffering off", "proxy_redirect off", "access_log off", "client_max_body_size 100M"], locations: [ { path: "/", endpoint: "/" } ] }
+     - { subdomain: portainer, host: "{{ proxy_net_portainer_ip }}", port: 9000, extras: [], locations: [ {path: "/", endpoint: "/"}, { path: "/api/websocket/", endpoint: "/api/websocket/"} ] }
+     - { subdomain: torrent, host: "{{ proxy_net_vpn_client_ip }}", port: 9091, extras: [], locations: [ { path: "/rpc", endpoint: "/transmission/rpc" }, {path: "/upload", endpoint: "/transmission/upload"}, { path: "/", endpoint: "/transmission/web/" } ] }
      - { subdomain: sonarr, host: "{{ proxy_net_vpn_client_ip }}", port: 8989, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
      - { subdomain: radarr, host: "{{ proxy_net_vpn_client_ip }}", port: 7878, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
      - { subdomain: jackett, host: "{{ proxy_net_vpn_client_ip }}", port: 9117, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
-     - { subdomain: cloud, host: "{{ proxy_net_nextcloud_ip }}", port: 80, extras: ["proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/"} ] }
+     - { subdomain: cloud, host: "{{ proxy_net_nextcloud_ip }}", port: 80, extras: ["proxy_buffering off", "proxy_redirect off", "access_log off", "client_max_body_size 500M"], locations: [ { path: "/", endpoint: "/"} ] }
    - ssh_port: 22
    - plex_http_port: 32400
    - pihole_dns_port: 53

@@ -1,0 +1,4 @@
+- name: restart transmission
+  systemd:
+   name: transmission-docker
+   state: restarted

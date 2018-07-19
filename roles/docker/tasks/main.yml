@@ -30,8 +30,6 @@
    install_recommends: no
   with_items: 
    - "{{ docker_version }}"
-  notify:
-   - restart docker
 
 - name: add users to "docker" group
   user:

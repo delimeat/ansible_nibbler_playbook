@@ -1,0 +1,16 @@
+[Unit]
+Description=Radarr Docker
+RequiresMountsFor={{ radarr_dir }}
+Requires=docker.service vpn-client-docker.service
+After=docker.service vpn-client-docker.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ radarr_container_name }}
+ExecStart=/usr/bin/docker start -a {{ radarr_container_name }}
+ExecStop=/usr/bin/docker stop {{ radarr_container_name }}
+ExecReload=/usr/bin/docker restart {{ radarr_container_name }}
+
+[Install]
+WantedBy=multi-user.target

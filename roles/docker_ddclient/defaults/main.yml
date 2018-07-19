@@ -1,6 +1,0 @@
-ddclient_dir: "{{ nfs_dir }}/ddclient"
-ddclient_image: linuxserver/ddclient
-ddclient_image_tag: latest
-ddclient_container_name: ddclient
-ddclient_gid: 1000
-ddclient_uid: 1000
