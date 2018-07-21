@@ -11,17 +11,8 @@
    src: nextcloud-db-docker.service.j2 
    dest: "/etc/systemd/system/nextcloud-db-docker.service"
    mode: 0755
-  register:
-   copy_db_template
   notify:
    - restart nextcloud db
-
-- name: reload db systemd daemon
-  systemd:
-   name: nextcloud-db-docker
-   daemon_reload: yes
-  when:
-   copy_db_template.changed
 
 - name: create nextcloud db container
   docker_container:
@@ -48,17 +39,8 @@
    src: nextcloud-docker.service.j2 
    dest: "/etc/systemd/system/nextcloud-docker.service"
    mode: 0755
-  register:
-   copy_template
   notify:
    - restart nextcloud app
-
-- name: reload systemd daemon
-  systemd:
-   name: nextcloud-docker
-   daemon_reload: yes
-  when:
-   copy_template.changed
 
 - name: create nextcloud container
   docker_container:
@@ -94,9 +76,11 @@
    name: nextcloud-db-docker
    state: started
    enabled: yes
+   daemon_reload: yes
 
 - name: start nextcloud app
   systemd:
    name: nextcloud-docker
    state: started
    enabled: yes
+   daemon_reload: yes

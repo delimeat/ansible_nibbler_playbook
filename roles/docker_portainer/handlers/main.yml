@@ -2,3 +2,4 @@
   systemd:
    name: portainer-docker.service
    state: restarted
+   daemon_reload: yes

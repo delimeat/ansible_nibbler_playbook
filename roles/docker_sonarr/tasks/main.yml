@@ -3,17 +3,8 @@
    src: sonarr-docker.service.j2 
    dest: "/etc/systemd/system/sonarr-docker.service"
    mode: 0755
-  register:
-   copy_template
   notify:
    - restart sonarr
-
-- name: reload systemd daemon
-  systemd:
-   name: sonarr-docker
-   daemon_reload: yes
-  when:
-   copy_template.changed
 
 - name: create sonarr container
   docker_container:
@@ -27,7 +18,6 @@
     - "{{ sonarr_config_dir }}:/config"
     - "{{ transmission_downloads_dir }}:/downloads"
     - "{{ sonarr_tv_dir }}:/tv"
-    - /etc/localtime:/etc/localtime:ro
    env:
     PGID: "{{ sonarr_gid }}"
     PUID: "{{ sonarr_uid }}"
@@ -40,3 +30,4 @@
    name: sonarr-docker
    state: started
    enabled: yes
+   daemon_reload: yes

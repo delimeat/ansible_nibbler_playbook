@@ -3,17 +3,8 @@
    src: portainer-docker.service.j2 
    dest: "/etc/systemd/system/portainer-docker.service"
    mode: 0755
-  register:
-   copy_template
   notify:
    - restart portainer
-
-- name: reload systemd daemon
-  systemd:
-   name: portainer-docker
-   daemon_reload: yes
-  when:
-   copy_template.changed
 
 - name: create portainer container
   docker_container:
@@ -37,3 +28,4 @@
    name: portainer-docker.service
    state: started
    enabled: yes
+   daemon_reload: yes

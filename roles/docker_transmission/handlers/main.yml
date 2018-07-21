@@ -2,3 +2,4 @@
   systemd:
    name: transmission-docker
    state: restarted
+   daemon_reload: yes

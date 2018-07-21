@@ -2,3 +2,4 @@
   systemd:
    name: plex-docker
    state: restarted
+   daemon_reload: yes

@@ -2,3 +2,4 @@
   systemd:
    name: pihole-docker
    state: restarted
+   daemon_reload: yes

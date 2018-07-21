@@ -2,13 +2,16 @@
   systemd:
    name: guacamole-db-docker
    state: restarted
+   daemon_reload: yes
 
 - name: restart guacd
   systemd:
    name: guacd-docker
    state: restarted
+   daemon_reload: yes
 
 - name: restart guacamole app
   systemd:
    name: guacamole-docker
    state: restarted
+   daemon_reload: yes

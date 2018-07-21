@@ -3,17 +3,8 @@
    src: nginx-docker.service.j2 
    dest: "/etc/systemd/system/nginx-docker.service"
    mode: 0755
-  register:
-   copy_template
   notify:
    - restart nginx
-
-- name: reload systemd daemon
-  systemd:
-   name: nginx-docker
-   daemon_reload: yes
-  when:
-   copy_template.changed
 
 - name: copy default config template
   template: 
@@ -48,3 +39,4 @@
    name: nginx-docker
    state: started
    enabled: yes
+   daemon_reload: yes

@@ -2,3 +2,4 @@
   systemd:
    name: radarr-docker
    state: restarted
+   daemon_reload: yes
