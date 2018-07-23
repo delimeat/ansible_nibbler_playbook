@@ -3,7 +3,32 @@
    name: "{{ hostname }}"
   when: hostname is defined
 
+- name: set hostname in /etc/hosts
+  lineinfile:
+   path: /etc/hosts
+   regexp: '^127\.0\.1\.1'
+   line: "127.0.1.1 {{ hostname }}"
+   owner: root
+   group: root
+   mode: 0644
+  when: hostname is defined
+
 - name: set timezone
   timezone:
    name: "{{ host_tz }}"
   when: host_tz is defined
+
+- name: install unattended-upgrades
+  apt:
+   name: unattended-upgrades
+   state: present
+   update_cache: yes
+   install_recommends: no
+
+- name: copy 20auto-upgrades to /etc/apt/apt.d/
+  copy:
+   src: 20auto-upgrades
+   dest: /etc/apt/apt.conf.d/20auto-upgrades
+   owner: root
+   group: root
+   mode: 0644

@@ -13,3 +13,5 @@ docker_apt_key_url: "{{ docker_apt_url }}/gpg"
 docker_apt_key_fingerprint: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 docker_release_channel: stable
 docker_version: docker-ce
+docker_users:
+ - "{{ ansible_user }}"

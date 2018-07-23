@@ -29,6 +29,12 @@
   notify:
    - restart pihole
 
+- name: disable systemd-resolved
+  systemd:
+   name: systemd-resolved
+   state: stopped
+   enabled: false
+
 - name: start pihole
   systemd:
    name: pihole-docker

@@ -4,4 +4,4 @@ zone={{ ddclient_zone }},
 ttl=1,
 login={{ ddclient_login }}
 password={{ ddclient_password }}
-{{ ddclient_host }},
+{{ ddclient_domain }},{% for subdomain in ddclient_subdomains %}{{ subdomain }}.{{ ddclient_domain }},{% endfor %}
