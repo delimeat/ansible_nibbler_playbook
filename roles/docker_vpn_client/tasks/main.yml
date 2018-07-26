@@ -1,3 +1,11 @@
+- name: install prerequisites
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+   install_recommends: no
+  with_items: "{{ vpn_client_prerequisites }}"
+
 - name: copy service template
   template: 
    src: vpn-client-docker.service.j2 
@@ -25,6 +33,15 @@
     - /dev/net/tun:/dev/net/tun
   notify:
    - restart vpn client
+
+- name: create cron tasks for vpn_client
+  cron:
+    name: "restart vpn client"
+    job: /bin/systemctl restart vpn-client-docker
+    minute: "0"
+    hour: "0"
+    day: "*"
+    month: "*"
 
 - name: start vpn client
   systemd:

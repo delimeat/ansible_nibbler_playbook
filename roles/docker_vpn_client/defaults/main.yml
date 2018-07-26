@@ -1,3 +1,5 @@
+vpn_client_prerequisites:
+ - cron
 vpn_client_dir: "{{ nfs_dir }}/vpn_client"
 vpn_client_image: dperson/openvpn-client
 vpn_client_image_tag: latest
