@@ -1,4 +1,4 @@
 nfs_prequisites:
  - nfs-common
 nfs_dir: /mnt/shared
-nfs_opts: defaults,x-systemd.automount,noauto,nolock
+nfs_opts: auto,nofail,noatime,nolock,intr,tcp,actimeo=1800
