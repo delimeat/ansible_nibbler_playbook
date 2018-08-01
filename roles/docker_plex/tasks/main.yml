@@ -6,7 +6,15 @@
   notify:
    - restart plex
 
-- name: create plex container
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   mode: 0755
+  with_items:
+   - "{{ plex_transcode_dir }}"
+
+- name: create container
   docker_container:
    name: "{{ plex_container_name }}"
    image: "{{ plex_image }}:{{ plex_image_tag }}"
