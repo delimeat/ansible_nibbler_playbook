@@ -1,4 +1,4 @@
-portainer_dir: "{{ nfs_dir }}/portainer"
+portainer_volume_name: portainer_data
 portainer_port: 9000
 portainer_image: portainer/portainer
 portainer_image_tag: latest
