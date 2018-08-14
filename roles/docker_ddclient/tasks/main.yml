@@ -1,0 +1,29 @@
+#- name: create directories
+#  file:
+#   path: "{{ item }}"
+#   state: directory
+#   mode: 0755
+#   owner: "{{ ddclient_uid }}"
+#   group: "{{ ddclient_gid }}"
+#  with_items:
+#   - "{{ ddclient_dir }}"
+
+- name: Copy ddclient.conf
+  template: 
+   src: ddclient.conf.j2 
+   dest: "{{ ddclient_dir }}/ddclient.conf"
+   mode: 0755
+
+- name: create container
+  docker_container:
+   name: "{{ ddclient_container_name }}"
+   image: "{{ ddclient_image }}:{{ ddclient_image_tag }}"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   env:
+    PUID: "{{ docker_uid }}"
+    PGID: "{{ docker_gid }}"
+    TZ: "{{ docker_tz }}"
+   volumes:
+    - "{{ ddclient_dir }}:/config"

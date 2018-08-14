@@ -1,10 +1,20 @@
-- name: copy service template
-  template: 
-   src: plex-docker.service.j2 
-   dest: "/etc/systemd/system/plex-docker.service"
-   mode: 0755
+- name: configure firewall
+  ufw:
+   rule: "{{ item.rule }}"
+   port: "{{ item.port }}"
+   proto: "{{ item.proto }}"
+  with_items: 
+   - { rule: allow, port: "{{ plex_http_port }}", proto: tcp }
+   - { rule: allow, port: 3005, proto: tcp }
+   - { rule: allow, port: 8324, proto: tcp }
+   - { rule: allow, port: 32469, proto: tcp }
+   - { rule: allow, port: 1900, proto: udp }
+   - { rule: allow, port: 32410, proto: udp }
+   - { rule: allow, port: 32412, proto: udp }
+   - { rule: allow, port: 32413, proto: udp }
+   - { rule: allow, port: 32414, proto: udp }
   notify:
-   - restart plex
+   - reload ufw
 
 - name: create directories
   file:
@@ -19,12 +29,11 @@
    name: "{{ plex_container_name }}"
    image: "{{ plex_image }}:{{ plex_image_tag }}"
    pull: false
-   restart_policy: no
-   state: present
+   restart_policy: unless-stopped
+   state: started
    hostname: "{{ plex_hostname }}"
    networks:
-    - name: "{{ proxy_net_name }}"
-      ipv4_address: "{{ proxy_net_plex_ip }}"
+    - name: "{{ traefik_network_name }}"
    ports:
     - "{{ plex_http_port }}:32400/tcp"
     - 3005:3005/tcp
@@ -36,18 +45,20 @@
     - 32413:32413/udp
     - 32414:32414/udp
    env:
-    ADVERTISE_IP: "http://{{ ansible_default_ipv4.address }}:{{ plex_http_port }}"
     HOSTNAME: "{{ plex_hostname }}"
+    ADVERTISE_IP: "http://{{ ansible_default_ipv4.address }}:{{ plex_http_port }}"
+    CHANGE_CONFIG_DIR_OWNERSHIP: false
+    PLEX_UID: "{{ docker_uid }}"
+    PLEX_GID: "{{ docker_gid }}"
+    ALLOWED_NETWORKS: "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask }}"
+    TZ: "{{ docker_tz }}"
    volumes:
     - "{{ plex_config_dir }}:/config"
     - "{{ plex_data_dir }}:/data"
     - "{{ plex_transcode_dir }}:/transcode"
-  notify:
-   - restart plex
-
-- name: start plex
-  systemd:
-   name: plex-docker
-   state: started
-   enabled: yes
-   daemon_reload: yes
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=plex
+    traefik.port=32400
+    traefik.frontend.rule=Host:plex."{{ traefik_domain }}"

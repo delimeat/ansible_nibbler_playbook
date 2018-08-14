@@ -1,12 +1,12 @@
 - name: copy service template
   template: 
-   src: jackett-docker.service.j2 
-   dest: "/etc/systemd/system/jackett-docker.service"
+   src: jackett.service.j2 
+   dest: "/etc/systemd/system/jackett.service"
    mode: 0755
   notify:
    - restart jackett
 
-- name: create jackett container
+- name: create container
   docker_container:
    name: "{{ jackett_container_name }}"
    image: "{{ jackett_image }}:{{ jackett_image_tag }}"
@@ -18,15 +18,21 @@
     - "{{ jackett_config_dir }}:/config"
     - "{{ transmission_watch_dir }}:/downloads"
    env:
-    PGID: "{{ jackett_gid }}"
-    PUID: "{{ jackett_uid }}"
-    TZ: "{{ linuxserver_tz }}"
+    PUID: "{{ docker_uid }}"
+    PGID: "{{ docker_gid }}"
+    TZ: "{{ docker_tz }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=jackett
+    traefik.port=9117
+    traefik.frontend.rule=Host:jackett."{{ traefik_domain }}"
   notify:
    - restart jackett
 
 - name: start jackett
   systemd:
-   name: jackett-docker
+   name: jackett
    state: started
    enabled: yes
    daemon_reload: yes

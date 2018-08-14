@@ -1,4 +1,3 @@
-guac_port: 8080
 guac_dir: "{{ nfs_dir }}/guacamole"
 guac_db_dir: "{{ guac_dir }}/db/"
 guac_db_image: mariadb
@@ -8,8 +7,6 @@ guac_db_root_pwd: guac
 guac_db_name: guac
 guac_db_usr: guac
 guac_db_pwd: guac
-guac_db_gid: 1000
-guac_db_uid: 1000
 guacd_image: guacamole/guacd
 guacd_image_tag: latest
 guacd_container_name: guacd

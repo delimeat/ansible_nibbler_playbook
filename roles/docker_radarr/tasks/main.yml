@@ -1,12 +1,12 @@
 - name: copy service template
   template: 
-   src: radarr-docker.service.j2 
-   dest: "/etc/systemd/system/radarr-docker.service"
+   src: radarr.service.j2 
+   dest: "/etc/systemd/system/radarr.service"
    mode: 0755
   notify:
    - restart radarr
 
-- name: create radarr container
+- name: create container
   docker_container:
    name: "{{ radarr_container_name }}"
    image: "{{ radarr_image }}:{{ radarr_image_tag }}"
@@ -19,15 +19,21 @@
     - "{{ transmission_downloads_dir }}:/downloads"
     - "{{ radarr_movies_dir }}:/movies"
    env:
-    PGID: "{{ radarr_gid }}"
-    PUID: "{{ radarr_uid }}"
-    TZ: "{{ linuxserver_tz }}"
+    PUID: "{{ docker_uid }}"
+    PGID: "{{ docker_gid }}"
+    TZ: "{{ docker_tz }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=radarr
+    traefik.port=7878
+    traefik.frontend.rule=Host:radarr."{{ traefik_domain }}" 
   notify:
    - restart radarr
 
 - name: start radarr
   systemd:
-   name: radarr-docker
+   name: radarr
    state: started
    enabled: yes
    daemon_reload: yes

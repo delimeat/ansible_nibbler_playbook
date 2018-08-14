@@ -1,6 +1,14 @@
 vpn_client_prerequisites:
  - cron
-vpn_client_dir: "{{ nfs_dir }}/vpn_client"
+vpn_client_dir: "/opt/vpn-client"
 vpn_client_image: dperson/openvpn-client
 vpn_client_image_tag: latest
-vpn_client_container_name: vpn_client
+vpn_client_container_name: vpn-client
+vpn_client_username: "{{ email }}"
+vpn_client_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62303136643434323162373233666465373535373837396264646366393331643066643166646232
+          3031303239303063396464626136643165383965323962630a643038323831633833316565336330
+          39343463346666613261336164343832396566353630306130333162363066616663646333323435
+          3965396430616162630a613537646335363432666563353865396461653338346363386161643766
+          6362

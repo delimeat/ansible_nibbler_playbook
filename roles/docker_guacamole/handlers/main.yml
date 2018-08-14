@@ -1,17 +1,17 @@
 - name: restart guacamole db
   systemd:
-   name: guacamole-db-docker
+   name: guacamole-db
    state: restarted
    daemon_reload: yes
 
 - name: restart guacd
   systemd:
-   name: guacd-docker
+   name: guacd
    state: restarted
    daemon_reload: yes
 
 - name: restart guacamole app
   systemd:
-   name: guacamole-docker
+   name: guacamole
    state: restarted
    daemon_reload: yes

@@ -5,5 +5,3 @@ transmission_watch_dir: "{{ transmission_dir }}/watch"
 transmission_image: linuxserver/transmission
 transmission_image_tag: latest
 transmission_container_name: transmission
-transmission_gid: 1000
-transmission_uid: 1000

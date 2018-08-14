@@ -1,5 +1,4 @@
 portainer_volume_name: portainer_data
-portainer_port: 9000
 portainer_image: portainer/portainer
 portainer_image_tag: latest
 portainer_container_name: portainer

@@ -4,12 +4,13 @@
    state: present
    update_cache: yes
    install_recommends: no
-  with_items: "{{ nfs_prequisites }}"
+  with_items: "{{ nfs_prerequisites }}"
 
 - name: create nfs directory
   file:
    path: "{{ nfs_dir }}"
    state: directory
+   mode: 0755
   notify:
 
 - name: configure /etc/fstab for nfs share

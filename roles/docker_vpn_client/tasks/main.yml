@@ -6,15 +6,43 @@
    install_recommends: no
   with_items: "{{ vpn_client_prerequisites }}"
 
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   mode: 0755
+  with_items:
+   - "{{ vpn_client_dir }}"
+
+- name: copy auth template
+  template: 
+   src: auth.j2 
+   dest: "{{ vpn_client_dir }}/auth"
+   mode: 0600
+  notify:
+   - restart vpn client
+
+- name: copy files
+  copy:
+   src: "{{ item }}"
+   dest: "{{ vpn_client_dir }}/{{ item }}"
+   mode: 0755
+  with_items:
+   - ca.crt
+   - ta.key
+   - vpn.conf
+  notify:
+   - restart vpn client
+
 - name: copy service template
   template: 
-   src: vpn-client-docker.service.j2 
-   dest: "/etc/systemd/system/vpn-client-docker.service"
+   src: vpn-client.service.j2 
+   dest: "/etc/systemd/system/vpn-client.service"
    mode: 0755
   notify:
    - restart vpn client
 
-- name: create vpn client container
+- name: create container
   docker_container:
    name: "{{ vpn_client_container_name }}"
    image: "{{ vpn_client_image }}:{{ vpn_client_image_tag }}"
@@ -23,8 +51,7 @@
    restart_policy: no
    state: present
    networks:
-    - name: "{{ proxy_net_name }}"
-      ipv4_address: "{{ proxy_net_vpn_client_ip }}"
+    - name: "{{ traefik_network_name }}"
    volumes:
     - "{{ vpn_client_dir }}:/vpn"
    capabilities:
@@ -34,10 +61,10 @@
   notify:
    - restart vpn client
 
-- name: create cron tasks for vpn_client
+- name: create cron task
   cron:
     name: "restart vpn client"
-    job: /bin/systemctl restart vpn-client-docker
+    job: /bin/systemctl restart vpn-client
     minute: "0"
     hour: "0"
     day: "*"
@@ -45,7 +72,7 @@
 
 - name: start vpn client
   systemd:
-   name: vpn-client-docker
+   name: vpn-client
    state: started
    enabled: yes
    daemon_reload: yes

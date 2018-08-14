@@ -1,0 +1,82 @@
+- name: install prerequisites
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+   install_recommends: no
+  with_items: "{{ traefik_prerequisites }}"
+
+- name: configure firewall
+  ufw:
+   rule: "{{ item.rule }}"
+   port: "{{ item.port }}"
+   proto: "{{ item.proto }}"
+  with_items: 
+   - { rule: allow, port: "{{ traefik_http_port }}", proto: tcp }
+   - { rule: allow, port: "{{ traefik_https_port }}", proto: tcp }
+  notify:
+   - reload ufw
+
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   mode: 0755
+  with_items:
+   - "{{ traefik_dir }}"
+
+- name: create htpasswd file
+  htpasswd:
+   path: "{{ traefik_dir }}/htpasswd"
+   name: "{{ auth_username }}"
+   password: "{{ auth_password }}"
+   mode: 0640
+
+- name: copy config template
+  template: 
+   src: traefik.toml.j2 
+   dest: "{{ traefik_dir }}/traefik.toml"
+
+- name: check if acme.json exists
+  stat:
+   path: "{{ traefik_dir }}/acme.json"
+  register: traefik_acme_file
+
+- name: create acme.json
+  file:
+   path: "{{ traefik_dir }}/acme.json"
+   state: touch
+   mode: 0600
+  when: not traefik_acme_file.stat.exists
+
+- name: create network
+  docker_network:
+   name: "{{ traefik_network_name }}"
+
+- name: create container
+  docker_container:
+   name: "{{ traefik_container_name }}"
+   image: "{{ traefik_image }}:{{ traefik_image_tag}}"
+   command: --api --docker
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   ports:
+    - "{{ traefik_http_port }}:80"
+    - "{{ traefik_https_port }}:443"
+   networks:
+    - name: "{{ traefik_network_name }}"
+   volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - "{{ traefik_dir }}/traefik.toml:/etc/traefik/traefik.toml"
+    - "{{ traefik_dir }}/htpasswd:/etc/traefik/htpasswd"
+    - "{{ traefik_dir }}/acme.json:/etc/traefik/acme/acme.json"
+   env:
+    CLOUDFLARE_EMAIL: "{{ email }}"
+    CLOUDFLARE_API_KEY: "{{ cloudflare_key }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=traefik
+    traefik.port=8080
+    traefik.frontend.rule=Host:traefik."{{ traefik_domain }}" 

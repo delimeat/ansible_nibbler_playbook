@@ -1,12 +1,12 @@
 - name: copy service template
   template: 
-   src: sonarr-docker.service.j2 
-   dest: "/etc/systemd/system/sonarr-docker.service"
+   src: sonarr.service.j2 
+   dest: "/etc/systemd/system/sonarr.service"
    mode: 0755
   notify:
    - restart sonarr
 
-- name: create sonarr container
+- name: create container
   docker_container:
    name: "{{ sonarr_container_name }}"
    image: "{{ sonarr_image }}:{{ sonarr_image_tag }}"
@@ -19,15 +19,21 @@
     - "{{ transmission_downloads_dir }}:/downloads"
     - "{{ sonarr_tv_dir }}:/tv"
    env:
-    PGID: "{{ sonarr_gid }}"
-    PUID: "{{ sonarr_uid }}"
-    TZ: "{{ linuxserver_tz }}"
+    PUID: "{{ docker_uid }}"
+    PGID: "{{ docker_gid }}"
+    TZ: "{{ docker_tz }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=sonarr
+    traefik.port=8989
+    traefik.frontend.rule=Host:sonarr."{{ traefik_domain }}" 
   notify:
    - restart sonarr
 
 - name: start sonarr
   systemd:
-   name: sonarr-docker
+   name: sonarr
    state: started
    enabled: yes
    daemon_reload: yes

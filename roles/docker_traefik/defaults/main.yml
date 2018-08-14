@@ -1,0 +1,11 @@
+traefik_prerequisites:
+ - python-passlib
+traefik_dir: "/opt/traefik"
+traefik_image: traefik
+traefik_image_tag: latest
+traefik_container_name: proxy
+traefik_http_port: 80
+traefik_https_port: 443
+traefik_network_name: proxy_net
+traefik_domain: "{{ domain }}"
+traefik_acme_email: "{{ email }}"

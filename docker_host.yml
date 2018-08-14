@@ -7,13 +7,50 @@
      changed_when: False
    - setup:
   vars:
+   - ssh_port: 22
    - hostname: !vault |
           $ANSIBLE_VAULT;1.1;AES256
-          36616134343139333763353265316436393132626332623764363061333763636636633364353836
-          6131373633313839393730643036386335653564326432300a373466613266353966316131323239
-          33653066663639303966643336313966663337633065633563663462376139326666643837643939
-          3738666261666639610a383961383564336466323965336136356237393864666636373736356164
-          6464
+          39306162346338343833343633656632366132366232316536393533343865383066316165303334
+          6139386339633131306365373366636233336439663830640a306564303733636663386538623365
+          61326464326336303465376536633838353337626432363565653439323330376163346232393538
+          3162323064623266300a333839653561373739353133653565303662303835366638643839353434
+          3830
+   - domain: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30376239383564663737393165333062336465353561386331393735323464363137663239636232
+          3565633063326437396165303839363664613839656662330a343639653330373964363436663639
+          64653835616435336366623663346235346232323463303031383134346633626132356466653430
+          3930316534343137340a663261653363643637646437386332366532336430316334363466306234
+          6361
+   - email: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33313439653530393238353633643333333537623332353434646530666164646561663237636338
+          3635343639343835383837643663666336363463353364650a376666306533626130633636333862
+          39353034333730616236396236306363616437636361313064613136633165316435656432376335
+          3565313938346430390a366636383730353562383330353330653562393232643236363531643465
+          36613032383066326561353437313464356164306433616335383665343637316563
+   - cloudflare_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62303935353861386231333863336535623665666166346534316561626436373137376535613434
+          3562653365363764346664666266626135353839343166380a336437386166613235363761643365
+          36383761323963613963333034316435306134646438363664623762623766333134323536653331
+          3334653430383633370a323132653065393161383538373264306162636564663130376437663863
+          38373261303136366432646639323763613434316236393737383035323663633437663134396335
+          3663323237396464366232636662626462346562346536333639
+   - auth_username: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31373666363038343432313464653131633230653239336161396339366535663163316136613638
+          6633383431356337363133376331666263633532366637390a643139633261636138333166373535
+          66633539313733613432623762666133326435363262646538636661363939616663643139313562
+          6565316364376139660a353462373738366431363962303833363261633737626564313662343435
+          6564
+   - auth_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36343630373665376430333263643133663330356234613430313164346536626137653062393166
+          6165383162346362323763313337626631393365373764360a663332346361393264363234333033
+          39353835353539386239393964313332663964616533323538343230306138346464303833633862
+          3036666638626463330a653463383235633435346334633365623363356431303861666437626262
+          6338
    - nfs_host: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           34396434356435333933366562326664636130383566343462623762353961366533626264333237
@@ -28,74 +65,19 @@
           66303435373063666335383563653866353336643566393462386637386139333731643365623461
           3161393735613732300a366335383237313533303265383264363438656664646136353836653539
           66306136363535646162306630663834306539343836323434346261616439353036
-   - linuxserver_tz: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          63316365353734363465303561636230663632376361303434393139616234303231623131383066
-          6631313161373831633138326337363137653764313438370a306538393432653532646462323630
-          30356664616636623333343531353733363163383231363762316664333530616239396537353961
-          3165613433306630650a343137303339626231316439316566643162343761343032306630366233
-          39353632383233616432396666666338353361363663313330396335613565636336
-   - ddclient_subdomains: 
-      - guac
-      - pihole
-      - plex
-      - portainer
-      - torrent
-      - sonarr
-      - radarr
-      - jackett
-      - cloud
-   - proxy_net_nginx_ip: 172.18.0.2
-   - proxy_net_guacamole_ip: 172.18.0.3
-   - proxy_net_pihole_ip: 172.18.0.4
-   - proxy_net_plex_ip: 172.18.0.5
-   - proxy_net_portainer_ip: 172.18.0.6
-   - proxy_net_vpn_client_ip: 172.18.0.7
-   - proxy_net_nextcloud_ip: 172.18.0.8 
-   - nginx_http_port: 80
-   - nginx_https_port: 443
-   - nginx_proxy:
-     - { subdomain: guac, host: "{{ proxy_net_guacamole_ip }}", port: 8080, extras: ["proxy_buffering off", "access_log off"], locations: [ { path: "/", endpoint: "/guacamole/" } ] }
-     - { subdomain: pihole, host: "{{ proxy_net_pihole_ip }}", port: 80, extras: [], locations: [{ path: "/", endpoint: "/admin/" } ] }
-     - { subdomain: plex, host: "{{ proxy_net_plex_ip }}", port: "{{ plex_http_port }}", extras: ["proxy_cookie_path /web/ /plex/web/", "proxy_buffering off", "proxy_redirect off", "access_log off", "client_max_body_size 100M"], locations: [ { path: "/", endpoint: "/" } ] }
-     - { subdomain: portainer, host: "{{ proxy_net_portainer_ip }}", port: 9000, extras: [], locations: [ {path: "/", endpoint: "/"}, { path: "/api/websocket/", endpoint: "/api/websocket/"} ] }
-     - { subdomain: torrent, host: "{{ proxy_net_vpn_client_ip }}", port: 9091, extras: [], locations: [ { path: "/rpc", endpoint: "/transmission/rpc" }, {path: "/upload", endpoint: "/transmission/upload"}, { path: "/", endpoint: "/transmission/web/" } ] }
-     - { subdomain: sonarr, host: "{{ proxy_net_vpn_client_ip }}", port: 8989, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
-     - { subdomain: radarr, host: "{{ proxy_net_vpn_client_ip }}", port: 7878, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
-     - { subdomain: jackett, host: "{{ proxy_net_vpn_client_ip }}", port: 9117, extras: ["proxy_redirect off", "proxy_buffering off"], locations: [ { path: "/", endpoint: "/"} ] }
-     - { subdomain: cloud, host: "{{ proxy_net_nextcloud_ip }}", port: 80, extras: ["proxy_buffering off", "proxy_redirect off", "access_log off", "client_max_body_size 500M"], locations: [ { path: "/", endpoint: "/"} ] }
-   - ssh_port: 22
-   - plex_http_port: 32400
-   - pihole_dns_port: 53
-   - ufw_rules:
-      - { rule: allow, port: "{{ ssh_port }}", proto: tcp }
-      - { rule: allow, port: "{{ nginx_http_port }}", proto: tcp }
-      - { rule: allow, port: "{{ nginx_https_port }}", proto: tcp }
-      - { rule: allow, port: "{{ pihole_dns_port }}", proto: tcp }
-      - { rule: allow, port: "{{ pihole_dns_port }}", proto: udp }
-      - { rule: allow, port: "{{ plex_http_port }}", proto: tcp }
-      - { rule: allow, port: 3005, proto: tcp }
-      - { rule: allow, port: 8324, proto: tcp }
-      - { rule: allow, port: 32469, proto: tcp }
-      - { rule: allow, port: 1900, proto: udp }
-      - { rule: allow, port: 32410, proto: udp }
-      - { rule: allow, port: 32412, proto: udp }
-      - { rule: allow, port: 32413, proto: udp }
-      - { rule: allow, port: 32414, proto: udp }
   roles:
    - common
    - ufw
    - nfs
    - ddclient
-   - docker_certbot
-   - docker_nginx
-   - docker_pihole
+#   - docker_pihole
+#   - docker_ddclient
    - docker_portainer
-   - docker_guacamole
    - docker_plex
+   - docker_guacamole
+   - docker_nextcloud
    - docker_vpn_client
    - docker_transmission
    - docker_sonarr
    - docker_radarr
    - docker_jackett
-   - docker_nextcloud

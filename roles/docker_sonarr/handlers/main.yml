@@ -1,5 +1,5 @@
 - name: restart sonarr
   systemd:
-   name: sonarr-docker
+   name: sonarr
    state: restarted
    daemon_reload: yes

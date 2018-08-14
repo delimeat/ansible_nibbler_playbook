@@ -1,11 +1,11 @@
 - name: restart nextcloud db
   systemd:
-   name: nextcloud-db-docker
+   name: nextcloud-db
    state: restarted
    daemon_reload: yes
 
 - name: restart nextcloud app
   systemd:
-   name: nextcloud-docker
+   name: nextcloud
    state: restarted
    daemon_reload: yes

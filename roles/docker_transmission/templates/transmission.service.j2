@@ -1,0 +1,16 @@
+[Unit]
+Description=Transmission
+RequiresMountsFor={{ transmission_dir }}
+Requires=docker.service vpn-client.service
+After=docker.service vpn-client.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ transmission_container_name }}
+ExecStart=/usr/bin/docker start -a {{ transmission_container_name }}
+ExecStop=/usr/bin/docker stop {{ transmission_container_name }}
+ExecReload=/usr/bin/docker restart {{ transmission_container_name }}
+
+[Install]
+WantedBy=multi-user.target

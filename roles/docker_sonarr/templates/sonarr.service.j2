@@ -1,0 +1,16 @@
+[Unit]
+Description=Sonarr
+RequiresMountsFor={{ sonarr_dir }}
+Requires=docker.service vpn-client.service
+After=docker.service vpn-client.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill {{ sonarr_container_name }}
+ExecStart=/usr/bin/docker start -a {{ sonarr_container_name }}
+ExecStop=/usr/bin/docker stop {{ sonarr_container_name }}
+ExecReload=/usr/bin/docker restart {{ sonarr_container_name }}
+
+[Install]
+WantedBy=multi-user.target

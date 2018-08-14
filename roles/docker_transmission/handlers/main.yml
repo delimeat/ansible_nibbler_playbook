@@ -1,5 +1,5 @@
 - name: restart transmission
   systemd:
-   name: transmission-docker
+   name: transmission
    state: restarted
    daemon_reload: yes

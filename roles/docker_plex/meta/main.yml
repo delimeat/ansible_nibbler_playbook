@@ -1,4 +1,5 @@
 dependencies:
   - docker
-  - docker_proxy_net
+  - docker_traefik
   - nfs
+  - ufw

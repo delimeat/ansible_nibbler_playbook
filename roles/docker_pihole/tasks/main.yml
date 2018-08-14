@@ -1,43 +1,58 @@
-- name: copy service template
-  template: 
-   src: pihole-docker.service.j2 
-   dest: "/etc/systemd/system/pihole-docker.service"
-   mode: 0755
+- name: configure firewall
+  ufw:
+   rule: "{{ item.rule }}"
+   port: "{{ item.port }}"
+   proto: "{{ item.proto }}"
+  with_items: 
+   - { rule: allow, port: "{{ pihole_dns_port }}", proto: tcp }
+   - { rule: allow, port: "{{ pihole_dns_port }}", proto: udp }
+   - { rule: allow, port: "{{ pihole_dhcp_port }}", proto: udp }
   notify:
-   - restart pihole
+   - reload ufw
 
-- name: create pihole container
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   mode: 0755
+  with_items: 
+   - "{{ pihole_config_dir }}"
+   - "{{ pihole_dnsmasq_dir }}"
+
+- name: pull image
+  docker_image:
+   name: "{{ pihole_image }}:{{ pihole_image_tag }}"
+
+- name: disable systemd-resolved
+  systemd:
+   name: systemd-resolved
+   state: stopped
+   enabled: no
+ 
+- name: create container
   docker_container:
    name: "{{ pihole_container_name }}"
    image: "{{ pihole_image }}:{{ pihole_image_tag }}"
    pull: false
-   restart_policy: no
-   state: present
+   command: --restart=unless-stopped
+   restart_policy: unless-stopped
+   state: started
    hostname: "{{ pihole_hostname }}"
    networks:
-    - name: "{{ proxy_net_name }}"
-      ipv4_address: "{{ proxy_net_pihole_ip }}"
+    - name: "{{ traefik_network_name }}"
    ports:
     - "{{ pihole_dns_port }}:53/tcp"
     - "{{ pihole_dns_port }}:53/udp"
+    - "{{ pihole_dhcp_port }}:67/udp"
    env:
     ServerIP: "{{ ansible_default_ipv4.address }}"
     WEBPASSWORD: "{{ pihole_password }}"
    volumes:
     - "{{ pihole_config_dir }}:/etc/pihole"
     - "{{ pihole_dnsmasq_dir }}:/etc/dnsmasq.d"
-  notify:
-   - restart pihole
-
-- name: disable systemd-resolved
-  systemd:
-   name: systemd-resolved
-   state: stopped
-   enabled: false
-
-- name: start pihole
-  systemd:
-   name: pihole-docker
-   state: started
-   enabled: yes
-   daemon_reload: yes
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=pihole
+    traefik.port=80
+    traefik.frontend.rule=PathPrefixStrip:/pihole

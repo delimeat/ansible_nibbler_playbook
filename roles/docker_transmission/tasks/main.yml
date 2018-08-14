@@ -1,7 +1,7 @@
 - name: copy service template
   template: 
-   src: transmission-docker.service.j2 
-   dest: "/etc/systemd/system/transmission-docker.service"
+   src: transmission.service.j2 
+   dest: "/etc/systemd/system/transmission.service"
    mode: 0755
   notify:
    - restart transmission
@@ -19,15 +19,21 @@
     - "{{ transmission_downloads_dir }}:/downloads"
     - "{{ transmission_watch_dir }}:/watch"
    env:
-    PGID: "{{ transmission_gid }}"
-    PUID: "{{ transmission_uid }}"
-    TZ: "{{ linuxserver_tz }}"
+    PUID: "{{ docker_uid }}"
+    PGID: "{{ docker_gid }}"
+    TZ: "{{ docker_tz }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=transmission
+    traefik.port=9091
+    traefik.frontend.rule=Host:torrent."{{ traefik_domain }}" 
   notify:
    - restart transmission
 
 - name: start transmission
   systemd:
-   name: transmission-docker
+   name: transmission
    state: started
    enabled: yes
    daemon_reload: yes

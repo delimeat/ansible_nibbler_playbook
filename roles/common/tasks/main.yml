@@ -15,8 +15,8 @@
 
 - name: set timezone
   timezone:
-   name: "{{ host_tz }}"
-  when: host_tz is defined
+   name: "{{ timezone }}"
+  when: timezone is defined
 
 - name: install unattended-upgrades
   apt:

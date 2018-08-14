@@ -25,8 +25,8 @@
 
 - name: copy db service template
   template: 
-   src: guacamole-db-docker.service.j2 
-   dest: "/etc/systemd/system/guacamole-db-docker.service"
+   src: guacamole-db.service.j2 
+   dest: "/etc/systemd/system/guacamole-db.service"
    mode: 0755
   notify:
    - restart guacamole db
@@ -38,7 +38,7 @@
    pull: false
    restart_policy: no
    state: present
-   user: "{{ guac_db_uid }}:{{ guac_db_gid }}"
+   user: "{{ docker_uid }}:{{ docker_gid }}"
    networks:
     - name: guac_net
    volumes:
@@ -54,8 +54,8 @@
 
 - name: copy guacd service template
   template: 
-   src: guacd-docker.service.j2 
-   dest: "/etc/systemd/system/guacd-docker.service"
+   src: guacd.service.j2 
+   dest: "/etc/systemd/system/guacd.service"
    mode: 0755
   notify:
    - restart guacd
@@ -74,8 +74,8 @@
 
 - name: copy app service template
   template: 
-   src: guacamole-docker.service.j2 
-   dest: "/etc/systemd/system/guacamole-docker.service"
+   src: guacamole.service.j2 
+   dest: "/etc/systemd/system/guacamole.service"
    mode: 0755
   notify:
    - restart guacamole app
@@ -89,34 +89,39 @@
    state: present
    networks:
     - name: guac_net
-    - name: "{{ proxy_net_name }}"
-      ipv4_address: "{{ proxy_net_guacamole_ip }}"
+    - name: "{{ traefik_network_name }}"
    env:
     MYSQL_HOSTNAME: "{{ guac_db_container_name }}"
     MYSQL_DATABASE: "{{ guac_db_name }}"
     MYSQL_USER: "{{ guac_db_usr }}"
     MYSQL_PASSWORD: "{{ guac_db_pwd }}"
     GUACD_HOSTNAME: "{{ guacd_container_name }}"
+   labels:
+    traefik.enable=true
+    traefik.docker.network="{{ traefik_network_name }}"
+    traefik.backend=guac
+    traefik.port=8080
+    traefik.frontend.rule=Host:guac."{{ traefik_domain }};AddPrefix:/guacamole" 
   notify:
    - restart guacamole app
 
 - name: start guac db
   systemd:
-   name: guacamole-db-docker
+   name: guacamole-db
    state: started
    enabled: yes
    daemon_reload: yes
 
 - name: start guacd
   systemd:
-   name: guacd-docker
+   name: guacd
    state: started
    enabled: yes
    daemon_reload: yes
 
 - name: start guacamole
   systemd:
-   name: guacamole-docker
+   name: guacamole
    state: started
    enabled: yes
    daemon_reload: yes

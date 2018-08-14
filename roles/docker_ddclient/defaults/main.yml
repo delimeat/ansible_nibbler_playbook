@@ -1,0 +1,10 @@
+ddclient_dir: "{{ nfs_dir }}/ddclient"
+ddclient_image: linuxserver/ddclient
+ddclient_image_tag: latest
+ddclient_container_name: ddclient
+ddclient_zone: "{{ domain }}"
+ddclient_login: "{{ email }}"
+ddclient_password: "{{ cloudflare_key }}"
+ddclient_domain: "{{ domain }}"
+ddclient_subdomains: 
+ - "*"

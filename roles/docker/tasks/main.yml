@@ -1,23 +1,23 @@
-- name: install docker prerequisites
+- name: install prerequisites
   apt:
    name: "{{ item }}"
    state: present
    update_cache: yes
    install_recommends: no
-  with_items: "{{ docker_prequisites }}"
+  with_items: "{{ docker_prerequisites }}"
 
 - name: install docker-py
   pip:
    name: "{{ item }}"
-  with_items: "{{ docker_pip_prequisites }}"
+  with_items: "{{ docker_pip_prerequisites }}"
 
-- name: add docker apt key
+- name: add apt key
   apt_key:
    url: "{{ docker_apt_key_url }}"
    id: "{{ docker_apt_key_fingerprint }}"
    state: present
 
-- name: add docker repo 
+- name: add apt repo 
   apt_repository:
    repo: deb [arch=amd64] {{ docker_apt_url }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}
    state: present
@@ -30,6 +30,11 @@
    install_recommends: no
   with_items: 
    - "{{ docker_version }}"
+
+- name: start docker service
+  systemd:
+   name: docker
+   state: started
 
 - name: add users to "docker" group
   user:
@@ -48,8 +53,3 @@
     day: "*"
     month: "*"
     weekday: "0"
-
-- name: start docker service
-  systemd:
-   name: docker
-   state: started    

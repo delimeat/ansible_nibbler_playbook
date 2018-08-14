@@ -1,4 +1,0 @@
-- name: restart netfilter-persistent
-  systemd:
-   name: netfilter-persistent
-   state: restarted
