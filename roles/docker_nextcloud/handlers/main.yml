@@ -1,11 +1,11 @@
 - name: restart nextcloud db
   systemd:
-   name: nextcloud-db
+   name: "container@{{ nextcloud_db_container_name }}"
    state: restarted
    daemon_reload: yes
 
 - name: restart nextcloud app
   systemd:
-   name: nextcloud
+   name: "container@{{ nextcloud_container_name }}"
    state: restarted
    daemon_reload: yes

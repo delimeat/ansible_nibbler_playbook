@@ -1,0 +1,3 @@
+watchtower_image: v2tec/watchtower
+watchtower_image_tag: latest
+watchtower_container_name: watchtower

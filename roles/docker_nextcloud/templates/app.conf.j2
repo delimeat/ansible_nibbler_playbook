@@ -1,0 +1,4 @@
+[Unit]
+RequiresMountsFor={{ nextcloud_dir }}
+Requires=container@{{ nextcloud_db_container_name }}.service
+After=container@{{ nextcloud_db_container_name }}.service

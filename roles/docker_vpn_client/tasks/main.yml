@@ -34,14 +34,6 @@
   notify:
    - restart vpn client
 
-- name: copy service template
-  template: 
-   src: vpn-client.service.j2 
-   dest: "/etc/systemd/system/vpn-client.service"
-   mode: 0755
-  notify:
-   - restart vpn client
-
 - name: create container
   docker_container:
    name: "{{ vpn_client_container_name }}"
@@ -61,18 +53,17 @@
   notify:
    - restart vpn client
 
+- name: create systemd service
+  include_role:
+   name: docker_container_service
+  vars:
+   container_name: "{{ vpn_client_container_name }}"
+
 - name: create cron task
   cron:
     name: "restart vpn client"
-    job: /bin/systemctl restart vpn-client
+    job: "/bin/systemctl restart container@{{ vpn_client_container_name }}"
     minute: "0"
     hour: "0"
     day: "*"
     month: "*"
-
-- name: start vpn client
-  systemd:
-   name: vpn-client
-   state: started
-   enabled: yes
-   daemon_reload: yes

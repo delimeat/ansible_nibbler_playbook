@@ -1,11 +1,3 @@
-- name: copy service template
-  template: 
-   src: transmission.service.j2 
-   dest: "/etc/systemd/system/transmission.service"
-   mode: 0755
-  notify:
-   - restart transmission
-
 - name: create transmission container
   docker_container:
    name: "{{ transmission_container_name }}"
@@ -31,9 +23,13 @@
   notify:
    - restart transmission
 
-- name: start transmission
-  systemd:
-   name: transmission
-   state: started
-   enabled: yes
-   daemon_reload: yes
+
+- include_role:
+   name: docker_container_service
+  vars:
+   container_name: "{{ svc.container_name }}"
+   template_name: "{{ svc.template_name }}"
+  with_items:
+   - { container_name: "{{ transmission_container_name }}", template_name: systemd.conf.j2 }
+  loop_control:
+   loop_var: svc

@@ -1,11 +1,3 @@
-- name: copy service template
-  template: 
-   src: radarr.service.j2 
-   dest: "/etc/systemd/system/radarr.service"
-   mode: 0755
-  notify:
-   - restart radarr
-
 - name: create container
   docker_container:
    name: "{{ radarr_container_name }}"
@@ -31,9 +23,12 @@
   notify:
    - restart radarr
 
-- name: start radarr
-  systemd:
-   name: radarr
-   state: started
-   enabled: yes
-   daemon_reload: yes
+- include_role:
+   name: docker_container_service
+  vars:
+   container_name: "{{ svc.container_name }}"
+   template_name: "{{ svc.template_name }}"
+  with_items:
+   - { container_name: "{{ radarr_container_name }}", template_name: systemd.conf.j2 }
+  loop_control:
+   loop_var: svc

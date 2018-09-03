@@ -1,0 +1,10 @@
+- name: create container
+  docker_container:
+   name: "{{ watchtower_container_name }}"
+   image: "{{ watchtower_image }}:{{ watchtower_image_tag}}"
+   command: --cleanup --schedule "0 0 0 * * *"
+   pull: false
+   restart_policy: unless-stopped
+   state: started
+   volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro

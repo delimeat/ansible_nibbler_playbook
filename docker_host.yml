@@ -72,6 +72,7 @@
    - ddclient
 #   - docker_pihole
 #   - docker_ddclient
+   - docker_watchtower
    - docker_portainer
    - docker_plex
    - docker_guacamole

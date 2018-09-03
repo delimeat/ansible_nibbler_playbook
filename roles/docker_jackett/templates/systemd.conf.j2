@@ -1,0 +1,4 @@
+[Unit]
+RequiresMountsFor={{ jackett_dir }}
+Requires=docker.service container@{{ vpn_client_container_name }}.service
+After=docker.service container@{{ vpn_client_container_name }}.service

@@ -1,0 +1,15 @@
+[Unit]
+Description=Docker container for %i
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+RestartSec=3
+ExecStartPre=-/usr/bin/docker kill %i
+ExecStart=/usr/bin/docker start -a %i
+ExecStop=/usr/bin/docker stop %i
+ExecReload=/usr/bin/docker restart %i
+
+[Install]
+WantedBy=multi-user.target

@@ -32,3 +32,9 @@
    owner: root
    group: root
    mode: 0644
+
+- name: disable motd-news
+  lineinfile:
+   path: /etc/default/motd-news
+   regexp: '^ENABLED='
+   line: 'ENABLED=0'

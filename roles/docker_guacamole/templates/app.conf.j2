@@ -1,0 +1,3 @@
+[Unit]
+Requires=container@{{ guac_db_container_name }}.service container@{{ guacd_container_name }}.service
+After=container@{{ guac_db_container_name }}.service container@{{ guacd_container_name }}.service

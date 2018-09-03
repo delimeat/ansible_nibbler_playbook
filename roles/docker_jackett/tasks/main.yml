@@ -1,11 +1,3 @@
-- name: copy service template
-  template: 
-   src: jackett.service.j2 
-   dest: "/etc/systemd/system/jackett.service"
-   mode: 0755
-  notify:
-   - restart jackett
-
 - name: create container
   docker_container:
    name: "{{ jackett_container_name }}"
@@ -30,9 +22,12 @@
   notify:
    - restart jackett
 
-- name: start jackett
-  systemd:
-   name: jackett
-   state: started
-   enabled: yes
-   daemon_reload: yes
+- include_role:
+   name: docker_container_service
+  vars:
+   container_name: "{{ svc.container_name }}"
+   template_name: "{{ svc.template_name }}"
+  with_items:
+   - { container_name: "{{ jackett_container_name }}", template_name: systemd.conf.j2 }
+  loop_control:
+   loop_var: svc

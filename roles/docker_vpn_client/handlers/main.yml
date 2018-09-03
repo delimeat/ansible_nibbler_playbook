@@ -1,5 +1,5 @@
 - name: restart vpn client
   systemd:
-   name: vpn-client
+   name: "container@{{ vpn_client_container_name }}"
    state: restarted
    daemon_reload: yes

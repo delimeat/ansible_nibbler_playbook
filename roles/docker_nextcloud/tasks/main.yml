@@ -6,14 +6,6 @@
   docker_volume:
    name: nextcloud_html
 
-- name: copy db service template
-  template: 
-   src: nextcloud-db.service.j2 
-   dest: "/etc/systemd/system/nextcloud-db.service"
-   mode: 0755
-  notify:
-   - restart nextcloud db
-
 - name: create nextcloud db container
   docker_container:
    name: "{{ nextcloud_db_container_name }}"
@@ -33,14 +25,6 @@
     MYSQL_PASSWORD: "{{ nextcloud_db_pwd }}"
   notify:
    - restart nextcloud db
-
-- name: copy app service template
-  template: 
-   src: nextcloud.service.j2 
-   dest: "/etc/systemd/system/nextcloud.service"
-   mode: 0755
-  notify:
-   - restart nextcloud app
 
 - name: create nextcloud container
   docker_container:
@@ -76,16 +60,13 @@
   notify:
    - restart nextcloud app
 
-- name: start nextcloud db
-  systemd:
-   name: nextcloud-db
-   state: started
-   enabled: yes
-   daemon_reload: yes
-
-- name: start nextcloud app
-  systemd:
-   name: nextcloud
-   state: started
-   enabled: yes
-   daemon_reload: yes
+- include_role:
+   name: docker_container_service
+  vars:
+   container_name: "{{ svc.container_name }}"
+   template_name: "{{ svc.template_name }}"
+  with_items:
+   - { container_name: "{{ nextcloud_db_container_name }}", template_name: db.conf.j2 }
+   - { container_name: "{{ nextcloud_container_name }}", template_name: app.conf.j2 }
+  loop_control:
+   loop_var: svc

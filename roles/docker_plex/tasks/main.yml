@@ -48,8 +48,8 @@
     HOSTNAME: "{{ plex_hostname }}"
     ADVERTISE_IP: "http://{{ ansible_default_ipv4.address }}:{{ plex_http_port }}"
     CHANGE_CONFIG_DIR_OWNERSHIP: false
-    PLEX_UID: "{{ docker_uid }}"
-    PLEX_GID: "{{ docker_gid }}"
+#    PLEX_UID: "{{ docker_uid }}"
+#    PLEX_GID: "{{ docker_gid }}"
     ALLOWED_NETWORKS: "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask }}"
     TZ: "{{ docker_tz }}"
    volumes:

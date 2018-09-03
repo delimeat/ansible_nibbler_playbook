@@ -1,5 +1,5 @@
 - name: restart jackett
   systemd:
-   name: jackett
+   name: "container@{{ jackett_container_name }}"
    state: restarted
    daemon_reload: yes

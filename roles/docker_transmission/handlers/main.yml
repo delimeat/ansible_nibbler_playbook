@@ -1,5 +1,5 @@
 - name: restart transmission
   systemd:
-   name: transmission
+   name: "container@{{ transmission_container_name }}"
    state: restarted
    daemon_reload: yes
