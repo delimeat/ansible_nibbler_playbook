@@ -1,12 +1,12 @@
-#- name: create directories
-#  file:
-#   path: "{{ item }}"
-#   state: directory
-#   mode: 0755
-#   owner: "{{ ddclient_uid }}"
-#   group: "{{ ddclient_gid }}"
-#  with_items:
-#   - "{{ ddclient_dir }}"
+- name: create directories
+  file:
+   path: "{{ item }}"
+   state: directory
+   mode: 0755
+   owner: "{{ docker_uid }}"
+   group: "{{ docker_uid }}"
+  with_items:
+   - "{{ ddclient_dir }}"
 
 - name: Copy ddclient.conf
   template: 

@@ -20,15 +20,11 @@
     traefik.backend=sonarr
     traefik.port=8989
     traefik.frontend.rule=Host:sonarr."{{ traefik_domain }}" 
-  notify:
-   - restart sonarr
+  register: result
 
 - include_role:
    name: docker_container_service
   vars:
-   container_name: "{{ svc.container_name }}"
-   template_name: "{{ svc.template_name }}"
-  with_items:
-   - { container_name: "{{ sonarr_container_name }}", template_name: systemd.conf.j2 }
-  loop_control:
-   loop_var: svc
+   container_name: "{{ sonarr_container_name }}"
+   template_name: systemd.conf.j2
+   restart_required: "{{ result.changed }}"

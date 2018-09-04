@@ -19,8 +19,7 @@
    src: auth.j2 
    dest: "{{ vpn_client_dir }}/auth"
    mode: 0600
-  notify:
-   - restart vpn client
+  register: auth_result
 
 - name: copy files
   copy:
@@ -31,8 +30,7 @@
    - ca.crt
    - ta.key
    - vpn.conf
-  notify:
-   - restart vpn client
+  register: files_result
 
 - name: create container
   docker_container:
@@ -50,14 +48,14 @@
     - NET_ADMIN
    devices:
     - /dev/net/tun:/dev/net/tun
-  notify:
-   - restart vpn client
+  register: container_result
 
 - name: create systemd service
   include_role:
    name: docker_container_service
   vars:
    container_name: "{{ vpn_client_container_name }}"
+   restart_required: "{{ container_result.changed or files_result.changed or auth_result.changed }}"
 
 - name: create cron task
   cron:

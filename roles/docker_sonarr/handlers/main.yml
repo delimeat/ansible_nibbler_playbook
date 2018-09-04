@@ -1,5 +1,0 @@
-- name: restart sonarr
-  systemd:
-   name: "container@{{ sonarr_container_name }}"
-   state: restarted
-   daemon_reload: yes

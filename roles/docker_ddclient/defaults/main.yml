@@ -1,4 +1,4 @@
-ddclient_dir: "{{ nfs_dir }}/ddclient"
+ddclient_dir: "/opt/ddclient"
 ddclient_image: linuxserver/ddclient
 ddclient_image_tag: latest
 ddclient_container_name: ddclient

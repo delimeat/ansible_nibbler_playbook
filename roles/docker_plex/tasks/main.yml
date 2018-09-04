@@ -1,20 +1,16 @@
-- name: configure firewall
-  ufw:
-   rule: "{{ item.rule }}"
-   port: "{{ item.port }}"
-   proto: "{{ item.proto }}"
-  with_items: 
-   - { rule: allow, port: "{{ plex_http_port }}", proto: tcp }
-   - { rule: allow, port: 3005, proto: tcp }
-   - { rule: allow, port: 8324, proto: tcp }
-   - { rule: allow, port: 32469, proto: tcp }
-   - { rule: allow, port: 1900, proto: udp }
-   - { rule: allow, port: 32410, proto: udp }
-   - { rule: allow, port: 32412, proto: udp }
-   - { rule: allow, port: 32413, proto: udp }
-   - { rule: allow, port: 32414, proto: udp }
-  notify:
-   - reload ufw
+- include_role:
+   name: ufw
+  vars:
+   ufw_rules: 
+    - { rule: allow, port: "{{ plex_http_port }}", proto: tcp }
+    - { rule: allow, port: 3005, proto: tcp }
+    - { rule: allow, port: 8324, proto: tcp }
+    - { rule: allow, port: 32469, proto: tcp }
+    - { rule: allow, port: 1900, proto: udp }
+    - { rule: allow, port: 32410, proto: udp }
+    - { rule: allow, port: 32412, proto: udp }
+    - { rule: allow, port: 32413, proto: udp }
+    - { rule: allow, port: 32414, proto: udp }
 
 - name: create directories
   file:

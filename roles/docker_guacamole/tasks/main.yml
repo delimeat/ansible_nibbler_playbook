@@ -41,8 +41,7 @@
     MYSQL_DATABASE: "{{ guac_db_name }}"
     MYSQL_USER: "{{ guac_db_usr }}"
     MYSQL_PASSWORD: "{{ guac_db_pwd }}"
-  notify:
-   - restart guacamole db
+  register: db_result
 
 - name: create guacd container
   docker_container:
@@ -53,8 +52,7 @@
    state: present
    networks:
     - name: guac_net
-  notify:
-   - restart guacd
+  register: daemon_result
 
 - name: create guacamole container
   docker_container:
@@ -78,17 +76,17 @@
     traefik.backend=guac
     traefik.port=8080
     traefik.frontend.rule=Host:guac."{{ traefik_domain }};AddPrefix:/guacamole" 
-  notify:
-   - restart guacamole app
+  register: app_result
 
 - include_role:
    name: docker_container_service
   vars:
    container_name: "{{ svc.container_name }}"
    template_name: "{{ svc.template_name }}"
+   restart_required: "{{ svc.restart_required }}"
   with_items:
-   - { container_name: "{{ guac_db_container_name }}", template_name: db.conf.j2 }
-   - { container_name: "{{ guacd_container_name }}", template_name: daemon.conf.j2 }
-   - { container_name: "{{ guac_container_name }}", template_name: app.conf.j2 }
+   - { container_name: "{{ guac_db_container_name }}", template_name: db.conf.j2, restart_required: "{{ db_result.changed }}" }
+   - { container_name: "{{ guacd_container_name }}", template_name: daemon.conf.j2, restart_required: "{{ daemon_result.changed }}" }
+   - { container_name: "{{ guac_container_name }}", template_name: app.conf.j2, restart_required: "{{ app_result.changed }}" }
   loop_control:
    loop_var: svc

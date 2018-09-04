@@ -1,0 +1,5 @@
+- name: "restart systemd service for {{ container_name }}"
+  systemd:
+   name: "container@{{ container_name }}"
+   state: restarted
+   daemon_reload: yes

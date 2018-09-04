@@ -19,15 +19,11 @@
     traefik.backend=jackett
     traefik.port=9117
     traefik.frontend.rule=Host:jackett."{{ traefik_domain }}"
-  notify:
-   - restart jackett
+  register: result
 
 - include_role:
    name: docker_container_service
   vars:
-   container_name: "{{ svc.container_name }}"
-   template_name: "{{ svc.template_name }}"
-  with_items:
-   - { container_name: "{{ jackett_container_name }}", template_name: systemd.conf.j2 }
-  loop_control:
-   loop_var: svc
+   container_name: "{{ jackett_container_name }}"
+   template_name: systemd.conf.j2
+   restart_required: "{{ result.changed }}"

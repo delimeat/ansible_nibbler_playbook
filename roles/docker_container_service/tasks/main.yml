@@ -18,16 +18,15 @@
    src: "{{ template_name }}" 
    dest: "/etc/systemd/system/container@{{ container_name }}.service.d/10-container.conf"
    mode: 0755
-  register: results
+  notify:
+   - restart systemd service for {{ container_name }}
   when: template_name is defined
 
-- name: "restart service for {{ container_name }}"
-  systemd:
-   name: "container@{{ container_name }}"
-   state: restarted
-   enabled: yes
-   daemon_reload: yes
-  when: results is defined and results.changed
+- name: "trigger restart service for {{ container_name }}"
+  command: /bin/true
+  notify:
+   - restart systemd service for {{ container_name }}
+  when: restart_required|default(false) == true
 
 - name: "start service for {{ container_name }}"
   systemd:
@@ -35,38 +34,3 @@
    state: started
    enabled: yes
    daemon_reload: yes
-  when: results is not defined or not results.changed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,0 @@
-- name: restart radarr
-  systemd:
-   name: "container@{{ radarr_container_name }}"
-   state: restarted
-   daemon_reload: yes

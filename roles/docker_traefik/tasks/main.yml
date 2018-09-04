@@ -6,16 +6,12 @@
    install_recommends: no
   with_items: "{{ traefik_prerequisites }}"
 
-- name: configure firewall
-  ufw:
-   rule: "{{ item.rule }}"
-   port: "{{ item.port }}"
-   proto: "{{ item.proto }}"
-  with_items: 
-   - { rule: allow, port: "{{ traefik_http_port }}", proto: tcp }
-   - { rule: allow, port: "{{ traefik_https_port }}", proto: tcp }
-  notify:
-   - reload ufw
+- include_role:
+   name: ufw
+  vars:
+   ufw_rules: 
+    - { rule: allow, port: "{{ traefik_http_port }}", proto: tcp }
+    - { rule: allow, port: "{{ traefik_https_port }}", proto: tcp }
 
 - name: create directories
   file:

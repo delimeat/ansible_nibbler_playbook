@@ -2,4 +2,3 @@ dependencies:
   - docker
   - docker_traefik
   - nfs
-  - ufw
